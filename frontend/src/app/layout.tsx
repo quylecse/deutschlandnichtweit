@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro, STIX_Two_Text } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
+
 
 const beVietnamPro = Be_Vietnam_Pro({
   variable: "--font-be-vietnam",
@@ -29,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-[#F6F5F0] text-[#111111] font-sans selection:bg-[#111111] selection:text-[#F6F5F0]">
         {children}
+        <Analytics />
       </body>
     </html>
   );
