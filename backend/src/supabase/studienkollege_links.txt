@@ -1,0 +1,143 @@
+1. Baden-Württemberg
+Studienkolleg an der Universität Heidelberg
+
+Website: [https://www.isz.uni-heidelberg.de/de/studienkolleg](https://www.isz.uni-heidelberg.de/de/studienkolleg)
+
+Crawler URL (Aufnahmetest/Bewerbung): [https://www.isz.uni-heidelberg.de/de/aufnahme-stk-ksk](https://www.isz.uni-heidelberg.de/de/aufnahme-stk-ksk)
+
+Studienkolleg des KIT (Karlsruhe)
+
+Website: [https://www.stk.kit.edu/](https://www.stk.kit.edu/)
+
+Crawler URL: [https://www.stk.kit.edu/studieren.php](https://www.stk.kit.edu/studieren.php) (hoặc trang thông tin khóa T-Kurs/tuyển sinh cụ thể của KIT: [https://www.stk.kit.edu/t-kurs.php](https://www.stk.kit.edu/t-kurs.php))
+
+Studienkolleg HTWG Konstanz
+
+Website: [https://www.htwg-konstanz.de/studium/studienkolleg-der-htwg-konstanz/startseite-studienkolleg](https://www.htwg-konstanz.de/studium/studienkolleg-der-htwg-konstanz/startseite-studienkolleg)
+
+Crawler URL: [https://www.htwg-konstanz.de/studium/studienkolleg-der-htwg-konstanz/zeugnisanerkennung/anerkennung](https://www.htwg-konstanz.de/studium/studienkolleg-der-htwg-konstanz/zeugnisanerkennung/anerkennung)
+
+2. Bayern
+Studienkolleg bei den Universitäten des Freistaates Bayern (München)
+
+Website: [https://xn--studienkolleg-mnchen-3ec.de/](https://xn--studienkolleg-mnchen-3ec.de/)
+
+Crawler URL: [https://xn--studienkolleg-mnchen-3ec.de/bewerben/aufnahme-in-das-studienkolleg](https://xn--studienkolleg-mnchen-3ec.de/bewerben/aufnahme-in-das-studienkolleg)
+
+Studienkolleg bei den Fachhochschulen des Freistaates Bayern (Coburg)
+
+Website: [https://studienkolleg-coburg.de/](https://studienkolleg-coburg.de/)
+
+Crawler URL: [https://studienkolleg-coburg.de/aufnahmepruefung/](https://studienkolleg-coburg.de/aufnahmepruefung/) (Điều kiện dự tuyển: [https://studienkolleg-coburg.de/voraussetzungen/](https://studienkolleg-coburg.de/voraussetzungen/))
+
+3. Berlin
+Studienkolleg an der TU Berlin
+
+Website: [https://www.tu.berlin/international/studierende/studienkolleg](https://www.tu.berlin/international/studierende/studienkolleg)
+
+Crawler URL: [https://www.tu.berlin/international/studierende/studienkolleg/kurse-und-pruefungen](https://www.tu.berlin/international/studierende/studienkolleg/kurse-und-pruefungen)
+
+Studienkolleg der FU Berlin
+
+Website: [https://www.fu-berlin.de/sites/studienkolleg](https://www.fu-berlin.de/sites/studienkolleg)
+
+Crawler URL: [https://www.fu-berlin.de/sites/studienkolleg/bewerbung/](https://www.fu-berlin.de/sites/studienkolleg/bewerbung/)
+
+4. Hamburg
+Studienkolleg Hamburg
+
+Website: [https://studienkolleg-hamburg.de/](https://studienkolleg-hamburg.de/)
+
+Crawler URL: [https://studienkolleg-hamburg.de/bewerbung/](https://studienkolleg-hamburg.de/bewerbung/)
+
+5. Hessen
+Studienkolleg der Goethe-Universität Frankfurt am Main
+
+Website: [https://www.uni-frankfurt.de/43662305/Internationales_Studienzentrum__ISZ](https://www.uni-frankfurt.de/43662305/Internationales_Studienzentrum__ISZ)
+
+Crawler URL: [https://www.uni-frankfurt.de/43662351/Studienkolleg](https://www.uni-frankfurt.de/43662351/Studienkolleg)
+
+Studienkolleg TU Darmstadt
+
+Website: [https://www.stk.tu-darmstadt.de/studienkollegstart/startseite_stk.de.jsp](https://www.stk.tu-darmstadt.de/studienkollegstart/startseite_stk.de.jsp)
+
+Crawler URL: [https://www.stk.tu-darmstadt.de/schwerpunktkurse_stk/tkurs_stk/bewerbung_tkurs_stk/index.de.jsp](https://www.stk.tu-darmstadt.de/schwerpunktkurse_stk/tkurs_stk/bewerbung_tkurs_stk/index.de.jsp)
+
+Studienkolleg Universität Kassel
+
+Website: [https://www.uni-kassel.de/einrichtung/studienkolleg/willkommen.html](https://www.uni-kassel.de/einrichtung/studienkolleg/willkommen.html)
+
+Crawler URL: [https://www.uni-kassel.de/einrichtung/studienkolleg/bewerbung-und-aufnahme.html](https://www.uni-kassel.de/einrichtung/studienkolleg/bewerbung-und-aufnahme.html)
+
+Studienkolleg Mittelhessen (Universität Marburg)
+
+Website: [https://www.uni-marburg.de/de/studienkolleg](https://www.uni-marburg.de/de/studienkolleg)
+
+Crawler URL: [https://www.uni-marburg.de/de/studienkolleg/fachkurse/tests](https://www.uni-marburg.de/de/studienkolleg/fachkurse/tests)
+
+6. Mecklenburg-Vorpommern
+Studienkolleg an der Hochschule Wismar
+
+Website: [https://www.hs-wismar.de/international/aus-dem-ausland/studienkolleg/](https://www.hs-wismar.de/international/aus-dem-ausland/studienkolleg/)
+
+Crawler URL: [https://www.hs-wismar.de/international/aus-dem-ausland/studienkolleg/bewerbung/](https://www.hs-wismar.de/international/aus-dem-ausland/studienkolleg/bewerbung/)
+
+7. Niedersachsen
+Niedersächsisches Studienkolleg (Universität Hannover)
+
+Website: [https://www.stk.uni-hannover.de/](https://www.stk.uni-hannover.de/)
+
+Crawler URL: [https://www.stk.uni-hannover.de/kursteilnahme/aufnahmetest](https://www.stk.uni-hannover.de/kursteilnahme/aufnahmetest) (Bewerbung: [https://www.stk.uni-hannover.de/kursteilnahme/bewerbung](https://www.stk.uni-hannover.de/kursteilnahme/bewerbung))
+
+8. Rheinland-Pfalz
+Studienkolleg an der Johannes Gutenberg-Universität Mainz
+
+Website: [https://www.issk.uni-mainz.de/studienkolleg/](https://www.issk.uni-mainz.de/studienkolleg/)
+
+Crawler URL: [https://www.studium.uni-mainz.de/meine-bewerbung/bewerbung-international/studienkolleg/](https://www.studium.uni-mainz.de/meine-bewerbung/bewerbung-international/studienkolleg/)
+
+Internationales Studienkolleg der Hochschule Kaiserslautern
+
+Website: [https://www.hs-kl.de/international/internationales-studienkolleg/](https://www.hs-kl.de/international/internationales-studienkolleg/)
+
+Crawler URL: [https://www.hs-kl.de/international/internationales-studienkolleg/bewerbung](https://www.hs-kl.de/international/internationales-studienkolleg/bewerbung)
+
+9. Sachsen
+Universität Leipzig – Studienkolleg Sachsen
+
+Website: [https://www.stksachs.uni-leipzig.de/](https://www.stksachs.uni-leipzig.de/)
+
+Crawler URL: [https://www.uni-leipzig.de/](https://www.uni-leipzig.de/) (Lưu ý: Hệ thống web của ĐH Leipzig hiện đang chạy trang thông báo sự cố IT tạm thời; đường dẫn tuyển sinh gốc là `https://www.uni-leipzig.de/studium/vorbereitung/studienkolleg-und-deutschkurse`)
+
+Studienkolleg an der Hochschule Zittau/Görlitz
+
+Website: [https://studienkolleg.hszg.de/](https://studienkolleg.hszg.de/)
+
+Crawler URL: [https://studienkolleg.hszg.de/bewerbung-aufnahme](https://studienkolleg.hszg.de/bewerbung-aufnahme)
+
+10. Sachsen-Anhalt
+Studienkolleg an der Martin-Luther-Universität Halle-Wittenberg
+
+Website: [https://www.studienkolleg.uni-halle.de/](https://www.studienkolleg.uni-halle.de/)
+
+Crawler URL: [https://www.studienkolleg.uni-halle.de/aufnahmetest/](https://www.studienkolleg.uni-halle.de/aufnahmetest/)
+
+Landesstudienkolleg an der Hochschule Anhalt (Köthen)
+
+Website: [https://www.hs-anhalt.de/international/bewerbung-auslaendische-studierende/studienkolleg/startseite.html](https://www.hs-anhalt.de/international/bewerbung-auslaendische-studierende/studienkolleg/startseite.html)
+
+Crawler URL: [https://www.hs-anhalt.de/international/bewerbung-auslaendische-studierende/studienkolleg/bewerbung.html](https://www.hs-anhalt.de/international/bewerbung-auslaendische-studierende/studienkolleg/bewerbung.html)
+
+11. Schleswig-Holstein
+Studienkolleg an der Fachhochschule Kiel (HAW Kiel)
+
+Website: [https://www.haw-kiel.de/studium/studieninteressierte/studienkolleg-schleswig-holstein/](https://www.haw-kiel.de/studium/studieninteressierte/studienkolleg-schleswig-holstein/)
+
+Crawler URL: [https://www.haw-kiel.de/studium/studieninteressierte/studienkolleg-schleswig-holstein/bewerbung/](https://www.haw-kiel.de/studium/studieninteressierte/studienkolleg-schleswig-holstein/bewerbung/)
+
+12. Thüringen
+Staatliches Studienkolleg Nordhausen (Hochschule Nordhausen)
+
+Website: [https://www.hs-nordhausen.de/international/staatliches-studienkolleg/](https://www.hs-nordhausen.de/international/staatliches-studienkolleg/)
+
+Crawler URL: [https://www.hs-nordhausen.de/international/staatliches-studienkolleg/bewerbung-am-studienkolleg/](https://www.hs-nordhausen.de/international/staatliches-studienkolleg/bewerbung-am-studienkolleg/)
