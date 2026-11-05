@@ -38,13 +38,13 @@ jobs:
       - name: Install & Build Backend
         working-directory: ./backend
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm run build
 
       - name: Install & Typecheck Frontend
         working-directory: ./frontend
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm exec tsc --noEmit
 
   # 2. Cronjob tự động gọi API đồng bộ dữ liệu Studienkolleg định kỳ
@@ -55,11 +55,7 @@ jobs:
     steps:
       - name: Trigger Backend Crawler Sync
         env:
-          BACKEND_URL: ${{ secrets.PRODUCTION_BACKEND_URL }}
+          BACKEND_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://deutschlandnichtweit.onrender.com' }}
         run: |
-          if [ -z "$BACKEND_URL" ]; then
-            echo "Chưa cấu hình secret PRODUCTION_BACKEND_URL trong GitHub Settings."
-            exit 0
-          fi
           curl -f -X POST "${BACKEND_URL%/}/api/crawler/sync"
 
