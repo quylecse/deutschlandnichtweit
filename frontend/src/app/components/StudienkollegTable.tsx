@@ -21,6 +21,7 @@ import {
 import { Studienkolleg } from '../types/studienkolleg';
 import { getCityImage } from '../lib/schoolImages';
 import {
+  extractGermanLevel,
   formatCoursesCompact,
   formatExamFeeShort,
   formatExamModeShort,
@@ -79,6 +80,7 @@ export default function StudienkollegTable({
   const [selectedState, setSelectedState] = useState('ALL');
   const [selectedType, setSelectedType] = useState('ALL');
   const [selectedFunding, setSelectedFunding] = useState('ALL');
+  const [selectedGermanLevel, setSelectedGermanLevel] = useState('ALL');
   const [selectedCourse, setSelectedCourse] = useState(initialCourse);
   const [selectedSubject, setSelectedSubject] = useState('ALL');
   const [onlyWithExamDate, setOnlyWithExamDate] = useState(false);
@@ -168,11 +170,19 @@ export default function StudienkollegTable({
       const matchesExamDate = !onlyWithExamDate || isMeaningfulValue(exam?.exam_date_raw);
       const matchesSample = !onlyWithSampleTests || isMeaningfulValue(exam?.sample_tests_url);
 
+      const level = extractGermanLevel(school);
+      const matchesGerman =
+        selectedGermanLevel === 'ALL' ||
+        (selectedGermanLevel === 'B1' && (level === 'B1' || level === 'B1/B2')) ||
+        (selectedGermanLevel === 'B2' && (level === 'B2' || level === 'B1/B2')) ||
+        (selectedGermanLevel === 'C1' && level === 'C1');
+
       return (
         matchesSearch &&
         matchesState &&
         matchesType &&
         matchesFunding &&
+        matchesGerman &&
         matchesCourse &&
         matchesSubject &&
         matchesExamDate &&
@@ -207,6 +217,7 @@ export default function StudienkollegTable({
     selectedState,
     selectedType,
     selectedFunding,
+    selectedGermanLevel,
     selectedCourse,
     selectedSubject,
     onlyWithExamDate,
@@ -228,6 +239,7 @@ export default function StudienkollegTable({
     selectedState !== 'ALL',
     selectedType !== 'ALL',
     selectedFunding !== 'ALL',
+    selectedGermanLevel !== 'ALL',
     selectedCourse !== 'ALL',
     selectedSubject !== 'ALL',
     onlyWithExamDate,
@@ -241,6 +253,7 @@ export default function StudienkollegTable({
     setSelectedState('ALL');
     setSelectedType('ALL');
     setSelectedFunding('ALL');
+    setSelectedGermanLevel('ALL');
     setSelectedCourse('ALL');
     setSelectedSubject('ALL');
     setOnlyWithExamDate(false);
@@ -321,7 +334,7 @@ export default function StudienkollegTable({
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[#D6D4CC]">
             {/* State */}
-            <div className="col-span-1 md:col-span-3 p-3">
+            <div className="col-span-1 md:col-span-2 p-3">
               <label
                 htmlFor="filter-state"
                 className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
@@ -340,6 +353,27 @@ export default function StudienkollegTable({
                     {st}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            {/* German Language Level */}
+            <div className="col-span-1 md:col-span-2 p-3">
+              <label
+                htmlFor="filter-german"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Tiếng Đức
+              </label>
+              <select
+                id="filter-german"
+                value={selectedGermanLevel}
+                onChange={(e) => setSelectedGermanLevel(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">Tất cả trình độ</option>
+                <option value="B1">Yêu cầu B1</option>
+                <option value="B2">Yêu cầu B2</option>
+                <option value="C1">Yêu cầu C1</option>
               </select>
             </div>
 
@@ -408,7 +442,7 @@ export default function StudienkollegTable({
             </div>
 
             {/* Subject */}
-            <div className="col-span-2 sm:col-span-2 md:col-span-3 p-3">
+            <div className="col-span-1 md:col-span-2 p-3">
               <label
                 htmlFor="filter-subject"
                 className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
@@ -598,6 +632,7 @@ export default function StudienkollegTable({
                 const portalInfo = formatPortalShort(exam?.application_portal);
                 const feeShort = formatExamFeeShort(exam?.exam_fee);
                 const partners = exam?.partner_universities || [];
+                const germanLevel = extractGermanLevel(school);
 
                 return (
                   <tr
@@ -630,7 +665,17 @@ export default function StudienkollegTable({
 
                     <td className="py-3 px-4 align-middle">
                       <span className="text-[#111111] font-medium">{school.city}</span>
-                      <span className="text-xs text-[#6E6D68] block">{school.state}</span>
+                      <div className="text-xs text-[#6E6D68] flex items-center gap-1.5 mt-0.5">
+                        <span>{school.state}</span>
+                        {germanLevel !== '—' && (
+                          <span
+                            className="inline-block bg-[#111111] text-[#F6F5F0] px-1.5 py-0.2 text-[9px] font-mono font-medium"
+                            title="Yêu cầu tiếng Đức tối thiểu"
+                          >
+                            {germanLevel}
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* TAB 1: EXAM & COURSES */}
@@ -797,6 +842,7 @@ export default function StudienkollegTable({
             const portalInfo = formatPortalShort(exam?.application_portal);
             const feeShort = formatExamFeeShort(exam?.exam_fee);
             const partners = exam?.partner_universities || [];
+            const germanLevel = extractGermanLevel(school);
 
             return (
               <div
@@ -804,12 +850,19 @@ export default function StudienkollegTable({
                 onClick={() => openSchoolDrawer(school)}
                 className="p-3.5 sm:p-4 active:bg-[#EAE7DF] transition-colors cursor-pointer"
               >
-                {/* Header row: Index, City/State, Funding badge */}
+                {/* Header row: Index, City/State, German Level + Funding badge */}
                 <div className="flex items-center justify-between text-[11px] text-[#6E6D68] mb-2">
                   <span className="font-mono">{String(idx + 1).padStart(2, '0')}. {school.city} · {school.state}</span>
-                  <span className="border border-[#111111] px-1.5 py-0.2 text-[9px] uppercase font-medium text-[#111111]">
-                    {fundingShort}
-                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {germanLevel !== '—' && (
+                      <span className="bg-[#111111] text-[#F6F5F0] px-1.5 py-0.2 text-[9px] font-mono font-medium">
+                        {germanLevel}
+                      </span>
+                    )}
+                    <span className="border border-[#111111] px-1.5 py-0.2 text-[9px] uppercase font-medium text-[#111111]">
+                      {fundingShort}
+                    </span>
+                  </div>
                 </div>
 
                 {/* School Name with Thumbnail */}
@@ -1070,6 +1123,18 @@ export default function StudienkollegTable({
                   </div>
 
                   <dl className="divide-y divide-[#D6D4CC] border-t border-b border-[#111111]">
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Tiếng Đức yêu cầu</dt>
+                      <dd className="col-span-2 text-[#111111] font-medium flex items-center gap-2">
+                        <span className="bg-[#111111] text-[#F6F5F0] px-2 py-0.5 text-xs font-mono font-medium">
+                          {extractGermanLevel(selectedSchool)}
+                        </span>
+                        <span className="text-[11px] text-[#6E6D68]">
+                          (Xem chi tiết chứng chỉ được chấp nhận ở danh sách bên dưới)
+                        </span>
+                      </dd>
+                    </div>
+
                     <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
                       <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Hạn nộp</dt>
                       <dd className="col-span-2 text-[#111111]">

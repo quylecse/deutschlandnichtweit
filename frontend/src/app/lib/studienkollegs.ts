@@ -259,3 +259,35 @@ export function formatExamFeeShort(examFee?: string | null): string {
   }
   return examFee!.length > 25 ? `${examFee!.slice(0, 24)}…` : examFee!;
 }
+
+/**
+ * Trích xuất trình độ tiếng Đức tối thiểu yêu cầu (B1, B2, hoặc C1)
+ */
+export function extractGermanLevel(school: Studienkolleg): 'B1' | 'B2' | 'C1' | 'B1/B2' | '—' {
+  const exam = school.entrance_exam_info;
+  if (!exam) return '—';
+
+  const combinedText = [
+    ...(exam.required_documents || []),
+    exam.raw_summary,
+    exam.application_portal,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const hasB1 = /\bB1\b/i.test(combinedText);
+  const hasB2 = /\bB2\b/i.test(combinedText);
+  const hasC1 = /\bC1\b/i.test(combinedText);
+
+  // Nếu cả B1 và B2 đều được chấp nhận hoặc ghi "B1 hoặc B2"
+  if (hasB1 && hasB2) return 'B1/B2';
+  if (hasB1) return 'B1';
+  if (hasB2) return 'B2';
+  if (hasC1) return 'C1';
+
+  // Với các trường công lập bang Hessen như Marburg, yêu cầu chung là B1/B2 tùy trường ĐH liên kết
+  if (school.state === 'Hessen') return 'B1/B2';
+
+  return '—';
+}
+
