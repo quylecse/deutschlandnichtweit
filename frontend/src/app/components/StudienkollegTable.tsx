@@ -2,7 +2,17 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpDown, ArrowUpRight, Mail, Phone, Search, X } from 'lucide-react';
+import {
+  ArrowUpDown,
+  ArrowUpRight,
+  ChevronRight,
+  Filter,
+  Mail,
+  Phone,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import { Studienkolleg } from '../types/studienkolleg';
 import {
   formatCoursesCompact,
@@ -37,20 +47,20 @@ const TABLE_TABS: { id: TableTab; code: string; label: string; desc: string }[] 
   {
     id: 'exam',
     code: '01',
-    label: 'Lịch thi & Khối học',
-    desc: 'Khối đào tạo, ngày thi Aufnahmetest, hình thức thi & đề mẫu',
+    label: 'Lịch thi & Khối',
+    desc: 'Khối đào tạo, ngày thi Aufnahmetest & hình thức thi',
   },
   {
     id: 'application',
     code: '02',
-    label: 'Đăng ký, Hồ sơ & Lệ phí',
-    desc: 'Cổng nộp (Uni-Assist / Portal), hạn nộp, lệ phí & giấy tờ yêu cầu',
+    label: 'Hồ sơ & Lệ phí',
+    desc: 'Cổng nộp (Uni-Assist/Portal), hạn nộp & lệ phí',
   },
   {
     id: 'partners',
     code: '03',
-    label: 'ĐH liên kết & Liên hệ',
-    desc: 'Loại trường (Công lập / Tư nhân), danh sách ĐH đối tác, Email & SĐT',
+    label: 'ĐH & Liên hệ',
+    desc: 'Loại trường, danh sách ĐH liên kết, Email & SĐT',
   },
 ];
 
@@ -73,6 +83,7 @@ export default function StudienkollegTable({
   const [activeTableTab, setActiveTableTab] = useState<TableTab>('exam');
   const [selectedSchool, setSelectedSchool] = useState<Studienkolleg | null>(null);
   const [activeDrawerTab, setActiveDrawerTab] = useState<DrawerTab>('overview');
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
     setSelectedCourse(initialCourse);
@@ -207,15 +218,17 @@ export default function StudienkollegTable({
     }
   };
 
-  const hasFilters =
-    searchQuery !== '' ||
-    selectedState !== 'ALL' ||
-    selectedType !== 'ALL' ||
-    selectedFunding !== 'ALL' ||
-    selectedCourse !== 'ALL' ||
-    selectedSubject !== 'ALL' ||
-    onlyWithExamDate ||
-    onlyWithSampleTests;
+  const activeFiltersCount = [
+    selectedState !== 'ALL',
+    selectedType !== 'ALL',
+    selectedFunding !== 'ALL',
+    selectedCourse !== 'ALL',
+    selectedSubject !== 'ALL',
+    onlyWithExamDate,
+    onlyWithSampleTests,
+  ].filter(Boolean).length;
+
+  const hasFilters = searchQuery !== '' || activeFiltersCount > 0;
 
   const resetAll = () => {
     setSearchQuery('');
@@ -231,200 +244,226 @@ export default function StudienkollegTable({
   return (
     <div className="w-full">
       {showHeader && (
-        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-[#6E6D68] mb-2">
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-[#6E6D68] mb-1.5 sm:mb-2">
               Danh bạ toàn liên bang
             </p>
-            <h2 className="font-editorial text-3xl sm:text-5xl tracking-tight text-[#111111]">
+            <h2 className="font-editorial text-2xl sm:text-4xl lg:text-5xl tracking-tight text-[#111111]">
               Bảng tra cứu Studienkolleg
             </h2>
           </div>
-          <div className="text-xs text-[#6E6D68]">
-            Hiển thị <strong className="text-[#111111]">{filteredAndSorted.length}</strong> /{' '}
-            {schools.length} trường · Nhấn vào từng dòng để mở ngăn xem chi tiết
+          <div className="text-xs text-[#6E6D68] flex items-center justify-between sm:justify-end gap-2">
+            <span>
+              <strong className="text-[#111111]">{filteredAndSorted.length}</strong> /{' '}
+              {schools.length} trường
+            </span>
           </div>
         </div>
       )}
 
-      {/* Minimalist Filter Bar */}
-      <div className="border border-[#111111] bg-[#F6F5F0] mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[#D6D4CC]">
-          {/* Search */}
-          <div className="md:col-span-4 p-3.5 flex flex-col justify-between">
-            <label
-              htmlFor="table-search"
-              className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1.5"
-            >
-              Tìm kiếm
-            </label>
-            <div className="relative flex items-center">
-              <Search className="w-3.5 h-3.5 text-[#6E6D68] mr-2.5 shrink-0" />
-              <input
-                id="table-search"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tên STK, ĐH liên kết, thành phố..."
-                className="w-full bg-transparent text-sm text-[#111111] placeholder:text-[#9A9890] focus:outline-none"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="text-[#6E6D68] hover:text-[#111111] cursor-pointer"
-                  aria-label="Xóa tìm kiếm"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* State */}
-          <div className="md:col-span-2 p-3.5 flex flex-col justify-between">
-            <label
-              htmlFor="filter-state"
-              className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1.5"
-            >
-              Bang
-            </label>
-            <select
-              id="filter-state"
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full bg-transparent text-sm text-[#111111] focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">Tất cả ({states.length})</option>
-              {states.map((st) => (
-                <option key={st} value={st}>
-                  {st}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Funding Type */}
-          <div className="md:col-span-2 p-3.5 flex flex-col justify-between">
-            <label
-              htmlFor="filter-funding"
-              className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1.5"
-            >
-              Loại trường
-            </label>
-            <select
-              id="filter-funding"
-              value={selectedFunding}
-              onChange={(e) => setSelectedFunding(e.target.value)}
-              className="w-full bg-transparent text-sm text-[#111111] focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">Tất cả</option>
-              <option value="PUBLIC">Công lập</option>
-              <option value="PRIVATE">Tư nhân</option>
-            </select>
-          </div>
-
-          {/* Type */}
-          <div className="md:col-span-2 p-3.5 flex flex-col justify-between">
-            <label
-              htmlFor="filter-type"
-              className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1.5"
-            >
-              Hệ trường
-            </label>
-            <select
-              id="filter-type"
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full bg-transparent text-sm text-[#111111] focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">Tất cả</option>
-              <option value="UNIVERSITAET">Universität</option>
-              <option value="FACHHOCHSCHULE">Fachhochschule</option>
-              <option value="BOTH">Uni & FH</option>
-            </select>
-          </div>
-
-          {/* Course */}
-          <div className="md:col-span-2 p-3.5 flex flex-col justify-between">
-            <label
-              htmlFor="filter-course"
-              className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1.5"
-            >
-              Khối học
-            </label>
-            <select
-              id="filter-course"
-              value={selectedCourse}
-              onChange={(e) => setSelectedCourse(e.target.value)}
-              className="w-full bg-transparent text-sm text-[#111111] focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">Tất cả</option>
-              {courses.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Bottom Filter Row */}
-        <div className="border-t border-[#D6D4CC] px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-4 bg-[#EFECE6]/60 text-xs">
-          <div className="flex flex-wrap items-center gap-6">
-            <label className="inline-flex items-center gap-2 cursor-pointer select-none text-[#111111]">
-              <input
-                type="checkbox"
-                checked={onlyWithExamDate}
-                onChange={(e) => setOnlyWithExamDate(e.target.checked)}
-                className="accent-[#111111] w-3.5 h-3.5 rounded-none"
-              />
-              <span>Đã có lịch thi</span>
-            </label>
-
-            <label className="inline-flex items-center gap-2 cursor-pointer select-none text-[#111111]">
-              <input
-                type="checkbox"
-                checked={onlyWithSampleTests}
-                onChange={(e) => setOnlyWithSampleTests(e.target.checked)}
-                className="accent-[#111111] w-3.5 h-3.5 rounded-none"
-              />
-              <span>Có đề thi mẫu</span>
-            </label>
-
-            {subjects.length > 0 && (
-              <div className="inline-flex items-center gap-2">
-                <span className="text-[#6E6D68]">Môn thi:</span>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="bg-transparent text-xs text-[#111111] underline underline-offset-4 focus:outline-none cursor-pointer"
-                >
-                  <option value="ALL">Tất cả</option>
-                  {subjects.map((sub) => (
-                    <option key={sub} value={sub}>
-                      {sub}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Search & Mobile Filter Toggle Bar */}
+      <div className="border border-[#111111] bg-[#F6F5F0] mb-4 sm:mb-6">
+        <div className="p-3 sm:p-4 flex items-center gap-2">
+          <div className="relative flex-1 flex items-center min-w-0">
+            <Search className="w-4 h-4 text-[#6E6D68] mr-2 shrink-0" />
+            <input
+              id="table-search"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm tên trường, thành phố, ĐH..."
+              className="w-full bg-transparent text-xs sm:text-sm text-[#111111] placeholder:text-[#9A9890] focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="p-1 text-[#6E6D68] hover:text-[#111111] cursor-pointer"
+                aria-label="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
 
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={resetAll}
-              className="text-[11px] underline underline-offset-4 text-[#111111] hover:opacity-70 cursor-pointer"
-            >
-              Xóa bộ lọc
-            </button>
-          )}
+          {/* Mobile Filter Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setShowMobileFilters((prev) => !prev)}
+            className={`md:hidden shrink-0 flex items-center gap-1.5 px-3 py-2 border text-xs cursor-pointer transition-colors ${
+              activeFiltersCount > 0 || showMobileFilters
+                ? 'bg-[#111111] text-[#F6F5F0] border-[#111111]'
+                : 'border-[#111111] bg-[#F6F5F0] text-[#111111]'
+            }`}
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Lọc</span>
+            {activeFiltersCount > 0 && (
+              <span className="bg-[#F6F5F0] text-[#111111] text-[10px] w-4 h-4 rounded-full inline-flex items-center justify-center font-bold">
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Collapsible Filters: Always visible on desktop, toggleable on mobile */}
+        <div
+          className={`${
+            showMobileFilters ? 'block' : 'hidden md:block'
+          } border-t border-[#D6D4CC]`}
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[#D6D4CC]">
+            {/* State */}
+            <div className="col-span-1 md:col-span-3 p-3">
+              <label
+                htmlFor="filter-state"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Bang
+              </label>
+              <select
+                id="filter-state"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer truncate"
+              >
+                <option value="ALL">Tất cả bang ({states.length})</option>
+                {states.map((st) => (
+                  <option key={st} value={st}>
+                    {st}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Funding Type */}
+            <div className="col-span-1 md:col-span-2 p-3">
+              <label
+                htmlFor="filter-funding"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Loại trường
+              </label>
+              <select
+                id="filter-funding"
+                value={selectedFunding}
+                onChange={(e) => setSelectedFunding(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">Tất cả</option>
+                <option value="PUBLIC">Công lập</option>
+                <option value="PRIVATE">Tư nhân</option>
+              </select>
+            </div>
+
+            {/* Type */}
+            <div className="col-span-1 md:col-span-2 p-3">
+              <label
+                htmlFor="filter-type"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Hệ trường
+              </label>
+              <select
+                id="filter-type"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">Tất cả</option>
+                <option value="UNIVERSITAET">Universität</option>
+                <option value="FACHHOCHSCHULE">Fachhochschule</option>
+                <option value="BOTH">Uni & FH</option>
+              </select>
+            </div>
+
+            {/* Course */}
+            <div className="col-span-1 md:col-span-2 p-3">
+              <label
+                htmlFor="filter-course"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Khối học
+              </label>
+              <select
+                id="filter-course"
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">Tất cả khối</option>
+                {courses.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subject */}
+            <div className="col-span-2 sm:col-span-2 md:col-span-3 p-3">
+              <label
+                htmlFor="filter-subject"
+                className="text-[10px] uppercase tracking-[0.14em] text-[#6E6D68] mb-1 block"
+              >
+                Môn thi
+              </label>
+              <select
+                id="filter-subject"
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="w-full bg-transparent text-xs sm:text-sm text-[#111111] focus:outline-none cursor-pointer truncate"
+              >
+                <option value="ALL">Tất cả môn ({subjects.length})</option>
+                {subjects.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Quick toggle chips */}
+          <div className="border-t border-[#D6D4CC] px-3 py-2.5 flex flex-wrap items-center justify-between gap-3 bg-[#EFECE6]/60 text-xs">
+            <div className="flex flex-wrap items-center gap-4">
+              <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-[#111111]">
+                <input
+                  type="checkbox"
+                  checked={onlyWithExamDate}
+                  onChange={(e) => setOnlyWithExamDate(e.target.checked)}
+                  className="accent-[#111111] w-3.5 h-3.5 rounded-none"
+                />
+                <span className="text-[11px] sm:text-xs">Đã có lịch thi</span>
+              </label>
+
+              <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-[#111111]">
+                <input
+                  type="checkbox"
+                  checked={onlyWithSampleTests}
+                  onChange={(e) => setOnlyWithSampleTests(e.target.checked)}
+                  className="accent-[#111111] w-3.5 h-3.5 rounded-none"
+                />
+                <span className="text-[11px] sm:text-xs">Có đề thi mẫu</span>
+              </label>
+            </div>
+
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={resetAll}
+                className="text-[11px] underline underline-offset-4 text-[#111111] hover:opacity-70 cursor-pointer ml-auto"
+              >
+                Đặt lại
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Topic Switcher Tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 border-x border-t border-[#111111] divide-y sm:divide-y-0 sm:divide-x divide-[#111111] bg-[#F6F5F0]">
+      {/* Topic Switcher Tabs (3 columns on desktop, pill row on mobile) */}
+      <div className="grid grid-cols-3 border-x border-t border-[#111111] divide-x divide-[#111111] bg-[#F6F5F0]">
         {TABLE_TABS.map((tab) => {
           const isActive = activeTableTab === tab.id;
           return (
@@ -432,25 +471,27 @@ export default function StudienkollegTable({
               key={tab.id}
               type="button"
               onClick={() => setActiveTableTab(tab.id)}
-              className={`p-4 text-left transition-colors cursor-pointer flex flex-col justify-between ${
+              className={`p-2.5 sm:p-4 text-left transition-colors cursor-pointer flex flex-col justify-between ${
                 isActive
                   ? 'bg-[#111111] text-[#F6F5F0]'
                   : 'bg-[#F6F5F0] text-[#111111] hover:bg-[#EAE7DF]'
               }`}
             >
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] mb-1">
+              <div className="flex items-center justify-between text-[9px] sm:text-[10px] uppercase tracking-[0.14em] mb-1">
                 <span className={isActive ? 'text-[#C8C5BC]' : 'text-[#6E6D68]'}>
-                  Chủ đề {tab.code}
+                  {tab.code}
                 </span>
                 {isActive && (
-                  <span className="px-1.5 py-0.5 border border-[#F6F5F0]/40 text-[9px]">
+                  <span className="hidden sm:inline-block px-1.5 py-0.2 border border-[#F6F5F0]/40 text-[9px]">
                     Đang xem
                   </span>
                 )}
               </div>
-              <div className="font-editorial text-xl leading-snug">{tab.label}</div>
+              <div className="font-editorial text-sm sm:text-lg lg:text-xl leading-tight truncate">
+                {tab.label}
+              </div>
               <p
-                className={`text-[11px] mt-1 line-clamp-1 ${
+                className={`hidden md:block text-[11px] mt-1 line-clamp-1 ${
                   isActive ? 'text-[#C8C5BC]' : 'text-[#6E6D68]'
                 }`}
               >
@@ -461,8 +502,8 @@ export default function StudienkollegTable({
         })}
       </div>
 
-      {/* Concise Data Table */}
-      <div className="border border-[#111111] bg-[#F6F5F0] overflow-x-auto">
+      {/* DESKTOP VIEW: Data Table (Hidden on small screens) */}
+      <div className="hidden md:block border border-[#111111] bg-[#F6F5F0] overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-[#111111] bg-[#EFECE6] text-[11px] uppercase tracking-[0.12em] text-[#5A5955]">
@@ -714,98 +755,232 @@ export default function StudienkollegTable({
         </table>
       </div>
 
+      {/* MOBILE VIEW: Compact Card List (Clean, best practice, no horizontal scroll) */}
+      <div className="md:hidden border-x border-b border-[#111111] divide-y divide-[#D6D4CC] bg-[#F6F5F0]">
+        {filteredAndSorted.length === 0 ? (
+          <div className="p-8 text-center text-xs text-[#6E6D68]">
+            <p className="text-sm text-[#111111] mb-2 font-medium">Không tìm thấy trường.</p>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={resetAll}
+                className="mt-2 text-xs border border-[#111111] px-3 py-1.5 text-[#111111]"
+              >
+                Đặt lại bộ lọc
+              </button>
+            )}
+          </div>
+        ) : (
+          filteredAndSorted.map((school, idx) => {
+            const exam = school.entrance_exam_info;
+            const fundingShort = formatFundingShort(exam?.funding_type);
+            const modeInfo = formatExamModeShort(exam?.exam_mode);
+            const portalInfo = formatPortalShort(exam?.application_portal);
+            const feeShort = formatExamFeeShort(exam?.exam_fee);
+            const partners = exam?.partner_universities || [];
+
+            return (
+              <div
+                key={school.id}
+                onClick={() => openSchoolDrawer(school)}
+                className="p-4 active:bg-[#EAE7DF] transition-colors cursor-pointer"
+              >
+                {/* Header row: Index, City/State, Funding badge */}
+                <div className="flex items-center justify-between text-[11px] text-[#6E6D68] mb-1.5">
+                  <span className="font-mono">{String(idx + 1).padStart(2, '0')}. {school.city} · {school.state}</span>
+                  <span className="border border-[#111111] px-1.5 py-0.2 text-[9px] uppercase font-medium text-[#111111]">
+                    {fundingShort}
+                  </span>
+                </div>
+
+                {/* School Name */}
+                <h3 className="font-editorial text-lg text-[#111111] leading-snug mb-2.5">
+                  {school.name}
+                </h3>
+
+                {/* Dynamic Content by Active Tab */}
+                {activeTableTab === 'exam' && (
+                  <div className="space-y-1.5 text-xs bg-[#EFECE6]/70 p-2.5 border border-[#D6D4CC]">
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className="text-[#6E6D68] text-[11px]">Khối:</span>
+                      <span className="font-medium text-[#111111]">
+                        {formatCoursesCompact(exam?.courses_offered)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="text-[#6E6D68] text-[11px] shrink-0">Lịch thi:</span>
+                      <SemesterDateDisplay
+                        raw={exam?.exam_date_raw}
+                        context={exam?.raw_summary}
+                        className="text-right"
+                      />
+                    </div>
+                    <div className="flex justify-between items-center gap-2">
+                      <span className="text-[#6E6D68] text-[11px]">Hình thức:</span>
+                      <span className="border border-[#111111] px-1.5 py-0.2 text-[10px] font-medium text-[#111111]">
+                        {modeInfo.label}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {activeTableTab === 'application' && (
+                  <div className="space-y-1.5 text-xs bg-[#EFECE6]/70 p-2.5 border border-[#D6D4CC]">
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className="text-[#6E6D68] text-[11px] shrink-0">Cổng nộp:</span>
+                      <span className="font-medium text-[#111111] text-right truncate">
+                        {portalInfo.badge}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="text-[#6E6D68] text-[11px] shrink-0">Hạn nộp:</span>
+                      <SemesterDateDisplay
+                        raw={exam?.application_deadline}
+                        context={exam?.raw_summary}
+                        className="text-right"
+                      />
+                    </div>
+                    <div className="flex justify-between items-center gap-2">
+                      <span className="text-[#6E6D68] text-[11px]">Lệ phí thi:</span>
+                      <span className="font-medium text-[#111111]">{feeShort}</span>
+                    </div>
+                  </div>
+                )}
+
+                {activeTableTab === 'partners' && (
+                  <div className="space-y-1.5 text-xs bg-[#EFECE6]/70 p-2.5 border border-[#D6D4CC]">
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className="text-[#6E6D68] text-[11px] shrink-0">Hệ trường:</span>
+                      <span className="text-[#111111]">{formatTypeShort(school.type)}</span>
+                    </div>
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className="text-[#6E6D68] text-[11px] shrink-0">ĐH liên kết:</span>
+                      <span className="text-right text-[#111111] font-medium truncate max-w-[200px]">
+                        {partners.length > 0 ? `${partners[0]} (${partners.length})` : '—'}
+                      </span>
+                    </div>
+                    {(isMeaningfulValue(exam?.contact_email) || isMeaningfulValue(exam?.contact_phone)) && (
+                      <div className="flex justify-between items-baseline gap-2">
+                        <span className="text-[#6E6D68] text-[11px]">Liên hệ:</span>
+                        <span className="text-right text-[#111111] truncate max-w-[200px]">
+                          {exam?.contact_email || exam?.contact_phone}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Footer action row */}
+                <div className="mt-2.5 flex items-center justify-between text-xs pt-1">
+                  <span className="text-[11px] text-[#6E6D68] inline-flex items-center gap-1">
+                    Nhấn để xem chi tiết <ChevronRight className="w-3 h-3" />
+                  </span>
+                  <Link
+                    href={`/studienkollegs/${school.slug || school.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[#111111] font-medium underline underline-offset-2 inline-flex items-center gap-0.5"
+                  >
+                    Trang hồ sơ <ArrowUpRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
       {/* Quick Preview Side Sheet (Drawer with Topic Tabs) */}
       {selectedSchool && (
         <div
-          className="fixed inset-0 z-50 bg-[#111111]/40 flex justify-end"
+          className="fixed inset-0 z-50 bg-[#111111]/50 backdrop-blur-xs flex justify-end"
           onClick={() => setSelectedSchool(null)}
         >
           <aside
-            className="w-full max-w-2xl bg-[#F6F5F0] h-full overflow-y-auto border-l border-[#111111] p-6 sm:p-10 flex flex-col justify-between"
+            className="w-full max-w-2xl bg-[#F6F5F0] h-full overflow-y-auto border-l border-[#111111] p-5 sm:p-8 lg:p-10 flex flex-col justify-between"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
               {/* Drawer Header */}
-              <div className="flex items-center justify-between border-b border-[#111111] pb-4 mb-5">
-                <div className="flex items-center gap-2.5 text-xs">
-                  <span className="uppercase tracking-[0.14em] text-[#6E6D68]">
+              <div className="flex items-center justify-between border-b border-[#111111] pb-3 mb-4 sm:mb-5">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="uppercase tracking-[0.14em] text-[#6E6D68] truncate max-w-[200px] sm:max-w-none">
                     {selectedSchool.city} · {selectedSchool.state}
                   </span>
-                  <span className="border border-[#111111] px-1.5 py-0.5 text-[10px] uppercase font-medium text-[#111111]">
+                  <span className="border border-[#111111] px-1.5 py-0.2 text-[9px] uppercase font-medium text-[#111111] shrink-0">
                     {formatFundingShort(selectedSchool.entrance_exam_info?.funding_type)}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedSchool(null)}
-                  className="text-xs uppercase tracking-wider text-[#111111] hover:opacity-60 cursor-pointer"
+                  className="text-xs uppercase tracking-wider text-[#111111] hover:opacity-60 cursor-pointer p-1"
                 >
                   Đóng [×]
                 </button>
               </div>
 
-              <h2 className="font-editorial text-3xl text-[#111111] leading-tight mb-6">
+              <h2 className="font-editorial text-2xl sm:text-3xl text-[#111111] leading-tight mb-4 sm:mb-6">
                 {selectedSchool.name}
               </h2>
 
               {/* Drawer Internal Tabs */}
-              <div className="grid grid-cols-3 border border-[#111111] divide-x divide-[#111111] mb-6 text-xs">
+              <div className="grid grid-cols-3 border border-[#111111] divide-x divide-[#111111] mb-5 text-[11px] sm:text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveDrawerTab('overview')}
-                  className={`py-2.5 px-3 uppercase tracking-wider text-center transition-colors cursor-pointer ${
+                  className={`py-2 px-1 sm:px-3 uppercase tracking-wider text-center transition-colors cursor-pointer truncate ${
                     activeDrawerTab === 'overview'
                       ? 'bg-[#111111] text-[#F6F5F0] font-medium'
                       : 'bg-[#F6F5F0] text-[#111111] hover:bg-[#EAE7DF]'
                   }`}
                 >
-                  01. Lịch thi & Khối
+                  01. Lịch thi
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveDrawerTab('application')}
-                  className={`py-2.5 px-3 uppercase tracking-wider text-center transition-colors cursor-pointer ${
+                  className={`py-2 px-1 sm:px-3 uppercase tracking-wider text-center transition-colors cursor-pointer truncate ${
                     activeDrawerTab === 'application'
                       ? 'bg-[#111111] text-[#F6F5F0] font-medium'
                       : 'bg-[#F6F5F0] text-[#111111] hover:bg-[#EAE7DF]'
                   }`}
                 >
-                  02. Hồ sơ & Lệ phí
+                  02. Hồ sơ
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveDrawerTab('partners')}
-                  className={`py-2.5 px-3 uppercase tracking-wider text-center transition-colors cursor-pointer ${
+                  className={`py-2 px-1 sm:px-3 uppercase tracking-wider text-center transition-colors cursor-pointer truncate ${
                     activeDrawerTab === 'partners'
                       ? 'bg-[#111111] text-[#F6F5F0] font-medium'
                       : 'bg-[#F6F5F0] text-[#111111] hover:bg-[#EAE7DF]'
                   }`}
                 >
-                  03. ĐH & Liên hệ
+                  03. ĐH & LH
                 </button>
               </div>
 
               {/* DRAWER TAB 1: OVERVIEW & EXAM */}
               {activeDrawerTab === 'overview' && (
-                <div className="space-y-6">
-                  <dl className="divide-y divide-[#D6D4CC] border-t border-b border-[#111111] text-sm">
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Loại & Hệ trường</dt>
+                <div className="space-y-5 sm:space-y-6">
+                  <dl className="divide-y divide-[#D6D4CC] border-t border-b border-[#111111] text-xs sm:text-sm">
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Loại & Hệ</dt>
                       <dd className="col-span-2 text-[#111111]">
                         {formatValue(selectedSchool.entrance_exam_info?.funding_type, 'Công lập')} ·{' '}
                         {formatTypeShort(selectedSchool.type)}
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Khối đào tạo</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Khối học</dt>
                       <dd className="col-span-2 text-[#111111] font-medium">
                         {selectedSchool.entrance_exam_info?.courses_offered?.join(', ') || '—'}
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Môn thi đầu vào</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Môn thi</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <SubjectListFormatted
                           subjects={selectedSchool.entrance_exam_info?.subjects}
@@ -813,8 +988,8 @@ export default function StudienkollegTable({
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Hình thức thi</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Hình thức thi</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <StructuredSentenceList
                           text={selectedSchool.entrance_exam_info?.exam_mode}
@@ -822,8 +997,8 @@ export default function StudienkollegTable({
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Lịch thi dự kiến</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Lịch thi</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <SemesterDateDisplay
                           raw={selectedSchool.entrance_exam_info?.exam_date_raw}
@@ -835,7 +1010,7 @@ export default function StudienkollegTable({
                   </dl>
 
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-3">
+                    <h3 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-2">
                       Tóm tắt tuyển sinh theo chủ đề
                     </h3>
                     <StructuredSummary
@@ -848,9 +1023,9 @@ export default function StudienkollegTable({
 
               {/* DRAWER TAB 2: APPLICATION, FEES & DOCUMENTS */}
               {activeDrawerTab === 'application' && (
-                <div className="space-y-6 text-sm">
-                  <div className="border border-[#111111] bg-[#EFECE6]/60 p-4 sm:p-5">
-                    <h3 className="text-[11px] uppercase tracking-[0.14em] text-[#6E6D68] mb-2.5">
+                <div className="space-y-5 sm:space-y-6 text-xs sm:text-sm">
+                  <div className="border border-[#111111] bg-[#EFECE6]/60 p-3.5 sm:p-4">
+                    <h3 className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-[#6E6D68] mb-2">
                       Cổng & Quy trình nộp hồ sơ
                     </h3>
                     <StructuredSteps
@@ -859,8 +1034,8 @@ export default function StudienkollegTable({
                   </div>
 
                   <dl className="divide-y divide-[#D6D4CC] border-t border-b border-[#111111]">
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Hạn nộp hồ sơ</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Hạn nộp</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <StructuredSentenceList
                           text={selectedSchool.entrance_exam_info?.application_deadline}
@@ -868,8 +1043,8 @@ export default function StudienkollegTable({
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Lệ phí xử lý hồ sơ</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Lệ phí hồ sơ</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <StructuredSentenceList
                           text={selectedSchool.entrance_exam_info?.application_fee}
@@ -877,8 +1052,8 @@ export default function StudienkollegTable({
                       </dd>
                     </div>
 
-                    <div className="py-3 grid grid-cols-3 gap-4">
-                      <dt className="text-xs uppercase text-[#6E6D68]">Lệ phí thi & Học phí</dt>
+                    <div className="py-2.5 sm:py-3 grid grid-cols-3 gap-2 sm:gap-4">
+                      <dt className="text-[11px] sm:text-xs uppercase text-[#6E6D68]">Lệ phí thi</dt>
                       <dd className="col-span-2 text-[#111111]">
                         <StructuredSentenceList
                           text={selectedSchool.entrance_exam_info?.exam_fee}
@@ -888,14 +1063,14 @@ export default function StudienkollegTable({
                   </dl>
 
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-3">
+                    <h3 className="text-[11px] sm:text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-2">
                       Danh sách tài liệu cần nộp khi đăng ký
                     </h3>
                     {selectedSchool.entrance_exam_info?.required_documents &&
                     selectedSchool.entrance_exam_info.required_documents.length > 0 ? (
                       <ul className="divide-y divide-[#D6D4CC] border-t border-b border-[#D6D4CC]">
                         {selectedSchool.entrance_exam_info.required_documents.map((doc, i) => (
-                          <li key={i} className="py-2.5 flex items-start gap-2.5 text-[#111111]">
+                          <li key={i} className="py-2 flex items-start gap-2 text-[#111111] leading-relaxed">
                             <span className="font-mono text-xs text-[#6E6D68] mt-0.5">
                               {String(i + 1).padStart(2, '0')}.
                             </span>
@@ -912,17 +1087,17 @@ export default function StudienkollegTable({
 
               {/* DRAWER TAB 3: PARTNER UNIVERSITIES & CONTACT */}
               {activeDrawerTab === 'partners' && (
-                <div className="space-y-6 text-sm">
+                <div className="space-y-5 sm:space-y-6 text-xs sm:text-sm">
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-3">
-                      Danh sách trường Đại học liên kết (
+                    <h3 className="text-[11px] sm:text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-2">
+                      Trường Đại học liên kết (
                       {selectedSchool.entrance_exam_info?.partner_universities?.length || 0})
                     </h3>
                     {selectedSchool.entrance_exam_info?.partner_universities &&
                     selectedSchool.entrance_exam_info.partner_universities.length > 0 ? (
                       <ul className="divide-y divide-[#D6D4CC] border-t border-b border-[#111111]">
                         {selectedSchool.entrance_exam_info.partner_universities.map((uni, i) => (
-                          <li key={i} className="py-2.5 flex items-start gap-2.5 text-[#111111]">
+                          <li key={i} className="py-2 flex items-start gap-2 text-[#111111]">
                             <span className="font-mono text-xs text-[#6E6D68] mt-0.5">
                               {String(i + 1).padStart(2, '0')}.
                             </span>
@@ -936,20 +1111,20 @@ export default function StudienkollegTable({
                   </div>
 
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-3">
+                    <h3 className="text-[11px] sm:text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-2">
                       Thông tin liên hệ trực tiếp
                     </h3>
                     <dl className="divide-y divide-[#D6D4CC] border-t border-b border-[#D6D4CC]">
-                      <div className="py-3 flex items-center justify-between gap-4">
-                        <dt className="text-xs uppercase text-[#6E6D68] flex items-center gap-1.5">
+                      <div className="py-2.5 flex items-center justify-between gap-3">
+                        <dt className="text-xs uppercase text-[#6E6D68] flex items-center gap-1.5 shrink-0">
                           <Mail className="w-3.5 h-3.5" />
                           <span>Email</span>
                         </dt>
-                        <dd className="text-[#111111]">
+                        <dd className="text-[#111111] truncate">
                           {isMeaningfulValue(selectedSchool.entrance_exam_info?.contact_email) ? (
                             <a
                               href={`mailto:${selectedSchool.entrance_exam_info!.contact_email}`}
-                              className="underline underline-offset-4 hover:opacity-60"
+                              className="underline underline-offset-4 hover:opacity-60 truncate block"
                             >
                               {selectedSchool.entrance_exam_info!.contact_email}
                             </a>
@@ -959,8 +1134,8 @@ export default function StudienkollegTable({
                         </dd>
                       </div>
 
-                      <div className="py-3 flex items-center justify-between gap-4">
-                        <dt className="text-xs uppercase text-[#6E6D68] flex items-center gap-1.5">
+                      <div className="py-2.5 flex items-center justify-between gap-3">
+                        <dt className="text-xs uppercase text-[#6E6D68] flex items-center gap-1.5 shrink-0">
                           <Phone className="w-3.5 h-3.5" />
                           <span>Điện thoại</span>
                         </dt>
@@ -984,8 +1159,8 @@ export default function StudienkollegTable({
             </div>
 
             {/* Drawer Footer */}
-            <div className="mt-8 pt-5 border-t border-[#111111] flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex flex-wrap items-center gap-5">
+            <div className="mt-6 pt-4 border-t border-[#111111] flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-4">
                 <a
                   href={selectedSchool.website_url}
                   target="_blank"
@@ -1008,9 +1183,9 @@ export default function StudienkollegTable({
 
               <Link
                 href={`/studienkollegs/${selectedSchool.slug || selectedSchool.id}`}
-                className="px-4 py-2 bg-[#111111] text-[#F6F5F0] hover:opacity-85 transition-opacity"
+                className="px-3.5 py-2 bg-[#111111] text-[#F6F5F0] hover:opacity-85 transition-opacity text-xs"
               >
-                Mở trang hồ sơ đầy đủ →
+                Hồ sơ đầy đủ →
               </Link>
             </div>
           </aside>

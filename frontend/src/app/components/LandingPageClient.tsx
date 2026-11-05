@@ -130,20 +130,20 @@ export default function LandingPageClient({ schools }: Props) {
     <div className="min-h-screen bg-[#F6F5F0] text-[#111111]">
       {/* Minimalist Masthead */}
       <header className="sticky top-0 z-40 bg-[#F6F5F0]/95 backdrop-blur-xs border-b border-[#111111]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 h-14 flex items-center justify-between text-xs">
-          <a href="#" className="font-semibold tracking-[0.12em] uppercase">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 h-13 sm:h-14 flex items-center justify-between text-xs">
+          <a href="#" className="font-semibold tracking-[0.12em] uppercase truncate max-w-[200px] sm:max-w-none">
             Deutschland.Nicht.Weit
           </a>
 
-          <span className="hidden sm:inline-block text-[#6E6D68]">
+          <span className="hidden md:inline-block text-[#6E6D68]">
             Hà Nội {times.vn} · Berlin {times.de}
           </span>
 
           <Link
             href="/studienkollegs"
-            className="inline-flex items-center gap-1 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider"
+            className="inline-flex items-center gap-1 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
           >
-            <span>Bảng toàn màn hình</span>
+            <span>Bảng toàn màn</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -153,29 +153,28 @@ export default function LandingPageClient({ schools }: Props) {
       <section className="max-w-[1440px] mx-auto border-b border-[#111111]">
         <div className="grid grid-cols-1 lg:grid-cols-12">
           {/* Left Column: Statement + Interactive Compass */}
-          <div className="lg:col-span-7 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 flex flex-col justify-between lg:border-r border-[#111111]">
+          <div className="lg:col-span-7 px-4 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 flex flex-col justify-between lg:border-r border-[#111111]">
             <div>
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-[#6E6D68] pb-5 border-b border-[#D6D4CC] mb-8 animate-reveal">
-                <span>Studienkolleg · Aufnahmetest · FSP</span>
-                <span>2026 / 2027</span>
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-[#6E6D68] pb-4 sm:pb-5 border-b border-[#D6D4CC] mb-6 sm:mb-8 animate-reveal">
+                <span>Studienkolleg · 2026/2027</span>
+                <span>{schools.length} TRƯỜNG</span>
               </div>
 
-              <h1 className="font-editorial text-6xl sm:text-7xl xl:text-[5.5rem] leading-[0.98] tracking-[-0.02em] text-[#111111] animate-reveal-delay-1">
+              <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] leading-[1.02] tracking-[-0.02em] text-[#111111] animate-reveal-delay-1">
                 <span className="block">Nước Đức</span>
-                <span className="block italic font-normal text-[#4A4944] mt-1">
+                <span className="block italic font-normal text-[#4A4944] mt-0.5 sm:mt-1">
                   không còn xa.
                 </span>
               </h1>
 
-              <p className="mt-6 text-base sm:text-[17px] text-[#3D3C38] max-w-xl leading-relaxed animate-reveal-delay-2">
-                Lịch thi Aufnahmetest, hạn nộp hồ sơ và đề mẫu từ các trường Studienkolleg trên toàn
-                nước Đức.
+              <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-[17px] text-[#3D3C38] max-w-xl leading-relaxed animate-reveal-delay-2">
+                Tra cứu lịch thi Aufnahmetest, cổng nộp hồ sơ, lệ phí và đề mẫu từ các trường Dự bị Đại học công lập trên toàn nước Đức.
               </p>
             </div>
 
             {/* Interactive Course Compass inside Hero */}
-            <div className="mt-12 pt-8 border-t border-[#111111] animate-reveal-delay-3">
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.15em] text-[#6E6D68] mb-3">
+            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-[#111111] animate-reveal-delay-3">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-[#6E6D68] mb-2 sm:mb-3">
                 <span>La bàn chọn khối dự bị</span>
                 <span>0{activeKursIdx + 1} / 05</span>
               </div>
@@ -190,17 +189,17 @@ export default function LandingPageClient({ schools }: Props) {
                       type="button"
                       onMouseEnter={() => setActiveKursIdx(idx)}
                       onClick={() => setActiveKursIdx(idx)}
-                      className={`py-3 px-2 text-left transition-colors cursor-pointer ${
+                      className={`py-2.5 sm:py-3 px-1 sm:px-2 text-center sm:text-left transition-colors cursor-pointer ${
                         active
                           ? 'bg-[#111111] text-[#F6F5F0]'
                           : 'hover:bg-[#EAE7DF] text-[#111111]'
                       }`}
                     >
-                      <span className="font-editorial text-2xl sm:text-3xl block leading-none">
+                      <span className="font-editorial text-xl sm:text-3xl block leading-none">
                         {item.short}
                       </span>
                       <span
-                        className={`text-[10px] uppercase tracking-wider mt-1.5 block truncate ${
+                        className={`text-[9px] sm:text-[10px] uppercase tracking-wider mt-1 block truncate ${
                           active ? 'text-[#C8C5BC]' : 'text-[#6E6D68]'
                         }`}
                       >
@@ -212,16 +211,16 @@ export default function LandingPageClient({ schools }: Props) {
               </div>
 
               {/* Active Kurs Blueprint Details */}
-              <div className="border-x border-b border-[#111111] bg-[#EFECE6] p-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                <div className="space-y-2">
-                  <h2 className="font-editorial text-2xl text-[#111111]">
+              <div className="border-x border-b border-[#111111] bg-[#EFECE6] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h2 className="font-editorial text-xl sm:text-2xl text-[#111111]">
                     {currentKurs.code} — {currentKurs.name}
                   </h2>
-                  <p className="text-xs text-[#5A5955]">
+                  <p className="text-xs text-[#5A5955] leading-relaxed">
                     <strong className="text-[#111111] font-medium">Môn thi:</strong>{' '}
                     {currentKurs.subjects}
                   </p>
-                  <p className="text-xs text-[#5A5955]">
+                  <p className="text-xs text-[#5A5955] leading-relaxed">
                     <strong className="text-[#111111] font-medium">Ngành đại học:</strong>{' '}
                     {currentKurs.majors}
                   </p>
@@ -230,7 +229,7 @@ export default function LandingPageClient({ schools }: Props) {
                 <button
                   type="button"
                   onClick={() => handleFilterByKurs(currentKurs.code)}
-                  className="shrink-0 inline-flex items-center gap-2 bg-[#111111] text-[#F6F5F0] px-4 py-2.5 text-xs uppercase tracking-wider hover:opacity-85 transition-opacity cursor-pointer"
+                  className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-[#111111] text-[#F6F5F0] px-4 py-2 sm:py-2.5 text-xs uppercase tracking-wider hover:opacity-85 transition-opacity cursor-pointer"
                 >
                   <span>Lọc {currentKurs.code}</span>
                   <ArrowDown className="w-3.5 h-3.5" />
@@ -239,8 +238,8 @@ export default function LandingPageClient({ schools }: Props) {
             </div>
           </div>
 
-          {/* Right Column: Dynamic Visual Frame */}
-          <div className="lg:col-span-5 flex flex-col justify-between bg-[#EFECE6] p-4 sm:p-8">
+          {/* Right Column: Dynamic Visual Frame (Collapsible/compact on mobile) */}
+          <div className="hidden sm:flex lg:col-span-5 flex-col justify-between bg-[#EFECE6] p-4 sm:p-8 border-t lg:border-t-0 border-[#111111]">
             <div className="flex items-center justify-between text-xs text-[#5A5955] mb-3">
               <span className="uppercase tracking-wider">{currentKurs.code}</span>
               <span>{currentKurs.city}</span>
@@ -287,19 +286,19 @@ export default function LandingPageClient({ schools }: Props) {
       </section>
 
       {/* LIVE TICKER */}
-      <div className="border-b border-[#111111] bg-[#EFECE6] overflow-hidden py-3">
-        <div className="animate-marquee text-xs uppercase tracking-[0.1em] text-[#111111]">
+      <div className="border-b border-[#111111] bg-[#EFECE6] overflow-hidden py-2 sm:py-3">
+        <div className="animate-marquee text-[11px] sm:text-xs uppercase tracking-[0.1em] text-[#111111]">
           {[...schools, ...schools].slice(0, 24).map((s, idx) => {
             const dateStr = formatValue(s.entrance_exam_info?.exam_date_raw, 'Đang cập nhật');
             return (
               <Link
                 key={`${s.id}-${idx}`}
                 href={`/studienkollegs/${s.slug || s.id}`}
-                className="inline-flex items-center gap-3 px-8 border-r border-[#C8C5BC] hover:opacity-60 transition-opacity whitespace-nowrap"
+                className="inline-flex items-center gap-2.5 px-6 sm:px-8 border-r border-[#C8C5BC] hover:opacity-60 transition-opacity whitespace-nowrap"
               >
                 <span className="text-[#6E6D68]">{s.city}</span>
                 <span className="font-semibold">{s.name}</span>
-                <span className="text-[#5A5955]">[{dateStr}]</span>
+                <span className="text-[#5A5955]">[{dateStr.slice(0, 25)}]</span>
               </Link>
             );
           })}
@@ -308,20 +307,20 @@ export default function LandingPageClient({ schools }: Props) {
 
       {/* CONCISE 4-STEP ROADMAP STRIP */}
       <section className="max-w-[1440px] mx-auto border-b border-[#111111]">
-        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#111111]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#111111]">
           {ROADMAP_STEPS.map((item) => (
             <div
               key={item.step}
-              className="p-6 sm:p-8 bg-[#F6F5F0] hover:bg-[#EFECE6] transition-colors flex flex-col justify-between"
+              className="p-5 sm:p-6 lg:p-8 bg-[#F6F5F0] hover:bg-[#EFECE6] transition-colors flex flex-col justify-between"
             >
-              <div className="flex items-baseline justify-between mb-4">
-                <span className="font-editorial text-3xl text-[#111111]">{item.step}.</span>
+              <div className="flex items-baseline justify-between mb-2 sm:mb-4">
+                <span className="font-editorial text-2xl sm:text-3xl text-[#111111]">{item.step}.</span>
                 <span className="text-[10px] uppercase tracking-[0.16em] text-[#6E6D68]">
                   Cột mốc
                 </span>
               </div>
               <div>
-                <h3 className="font-editorial text-2xl text-[#111111] mb-2">{item.title}</h3>
+                <h3 className="font-editorial text-lg sm:text-xl lg:text-2xl text-[#111111] mb-1.5 sm:mb-2">{item.title}</h3>
                 <p className="text-xs text-[#5A5955] leading-relaxed">{item.detail}</p>
               </div>
             </div>
@@ -332,7 +331,7 @@ export default function LandingPageClient({ schools }: Props) {
       {/* DIRECTORY TABLE */}
       <section
         id="bangtracuu"
-        className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-14 sm:py-20"
+        className="max-w-[1440px] mx-auto px-3 sm:px-8 lg:px-12 py-8 sm:py-14 lg:py-20"
       >
         <StudienkollegTable
           schools={schools}
