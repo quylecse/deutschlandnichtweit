@@ -30,7 +30,7 @@ const KURSE_COMPASS = [
     majors: 'Công nghệ thông tin, Cơ khí, Điện tử, Xây dựng, Toán, Vật lý',
     city: 'TU München & KIT Karlsruhe',
     image:
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1400&q=85',
+      'https://images.unsplash.com/photo-1630959299280-874fe62c7d83?q=80&w=2767&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
   },
   {
     code: 'M-Kurs',
@@ -60,7 +60,7 @@ const KURSE_COMPASS = [
     majors: 'Luật học, Báo chí, Truyền thông, Triết học, Lịch sử, Chính trị học',
     city: 'Humboldt-Universität zu Berlin',
     image:
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1400&q=85',
+      'https://images.unsplash.com/photo-1777583187888-af3ba93b3926?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
   },
   {
     code: 'S-Kurs',
@@ -70,7 +70,7 @@ const KURSE_COMPASS = [
     majors: 'Ngôn ngữ Anh/Pháp/Tây Ban Nha, Biên phiên dịch, Sư phạm ngoại ngữ',
     city: 'Universität Leipzig & Heidelberg',
     image:
-      'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1400&q=85',
+      'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
   },
 ];
 
@@ -203,19 +203,17 @@ export default function LandingPageClient({ schools }: Props) {
                       type="button"
                       onMouseEnter={() => setActiveKursIdx(idx)}
                       onClick={() => setActiveKursIdx(idx)}
-                      className={`py-2.5 sm:py-3 px-1 sm:px-2 text-center sm:text-left transition-colors cursor-pointer ${
-                        active
-                          ? 'bg-[#111111] text-[#F6F5F0]'
-                          : 'hover:bg-[#EAE7DF] text-[#111111]'
-                      }`}
+                      className={`py-2.5 sm:py-3 px-1 sm:px-2 text-center sm:text-left transition-colors cursor-pointer ${active
+                        ? 'bg-[#111111] text-[#F6F5F0]'
+                        : 'hover:bg-[#EAE7DF] text-[#111111]'
+                        }`}
                     >
                       <span className="font-editorial text-xl sm:text-3xl block leading-none">
                         {item.short}
                       </span>
                       <span
-                        className={`text-[9px] sm:text-[10px] uppercase tracking-wider mt-1 block truncate ${
-                          active ? 'text-[#C8C5BC]' : 'text-[#6E6D68]'
-                        }`}
+                        className={`text-[9px] sm:text-[10px] uppercase tracking-wider mt-1 block truncate ${active ? 'text-[#C8C5BC]' : 'text-[#6E6D68]'
+                          }`}
                       >
                         {item.code}
                       </span>
@@ -265,11 +263,10 @@ export default function LandingPageClient({ schools }: Props) {
                   key={item.code}
                   src={item.image}
                   alt={item.name}
-                  className={`absolute inset-0 w-full h-full object-cover grayscale contrast-110 transition-all duration-700 ease-out ${
-                    index === activeKursIdx
-                      ? 'opacity-95 scale-100'
-                      : 'opacity-0 scale-105 pointer-events-none'
-                  }`}
+                  className={`absolute inset-0 w-full h-full object-cover grayscale contrast-110 transition-all duration-700 ease-out ${index === activeKursIdx
+                    ? 'opacity-95 scale-100'
+                    : 'opacity-0 scale-105 pointer-events-none'
+                    }`}
                 />
               ))}
               <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/80 via-transparent to-transparent" />

@@ -6,45 +6,45 @@ export const CITY_IMAGES: Record<string, string> = {
   Berlin:
     'https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=800&q=80',
   München:
-    'https://images.unsplash.com/photo-1595867818082-083862f3d630?auto=format&fit=crop&w=800&q=80',
+    'https://studienkolleg-münchen.de/wp-content/uploads/2017/02/infanterie_260816_018p-1-1024x851.jpg',
   'Frankfurt am Main':
-    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhI38dCTWtt70cZF8Qi44XbYJJg4L1XyYiGirE7zA-gt_f_soCSBofAFE&s=10',
   Hamburg:
-    'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=800&q=80',
+    'https://www.deincampusplan.de/wp-content/uploads/2026/08/studienkolleg-scaled.webp',
   Heidelberg:
-    'https://images.unsplash.com/photo-1527866959252-deab85ef7d1b?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTjaOftQd9j5A07_J-HFRvN9GCdaM1U4FfTvmUjGZSX1AFmnDlRriTLqA&s=10',
   Karlsruhe:
-    'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
+    'https://www.stk.kit.edu/img/content/stknew_Karlsruher-Schloss_600x340px.png',
   Leipzig:
-    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3Cl6I0ImwFKA_UPophUuotTj9zF4xoZQpeuHiXvRN23CZDGfT43jrYsQF&s=10',
   Hannover:
-    'https://images.unsplash.com/photo-1584448141569-69f342da535c?auto=format&fit=crop&w=800&q=80',
+    'https://www.stk.uni-hannover.de/typo3temp/lf_vhs_direct/fpdirect_7f09aa26eece0895ec234f9d0b1a5c69d055a8e3.webp',
   Darmstadt:
-    'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRF4UZcNluIkCXtqYrVqjicDov8q-2XBH1aI32Xtchn44zySPy2ogh_0FBv&s=10',
   Kassel:
     'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
   Marburg:
-    'https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80',
+    'https://stuwoli.de/wp-content/uploads/2020/03/Marburg-Studienkolleg-1.jpeg',
   Mainz:
-    'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+    'https://cms.zdv.uni-mainz.de/fb03-orga/wp-content/uploads/sites/1105/2026/04/Uni-Eingang.jpg',
   Kiel:
-    'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80',
+    'https://dlc-live-hub.s3.eu-central-3.ionoscloud.com/content/LearningVenue/68a44a9c6d544.jpg',
   Konstanz:
-    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80',
+    'https://www.htwg-konstanz.de/fileadmin/pub/allgemein/Bilder/Bilder_Quadrate_490x490px/Bilder_490x490px_Campus-u-Image/Hochschule-Konstanz-HTWG-Campus-Seerhein-492x492px.jpg',
   'Halle (Saale)':
-    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80',
+    'https://d26uhjq9x2kecg.cloudfront.net/university/university-of-halle-wittenberg-martin-luther-university-uni4edu_id_1748461321396.webp?cb=1748461322393',
   Nordhausen:
-    'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
+    'https://studienkollegs-in.de/wp-content/uploads/2017/05/Studienkolleg-Nordhausen.jpg',
   Köthen:
-    'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=800&q=80',
+    'https://www.hs-anhalt.de/fileadmin/_processed_/6/6/csm_Hauptgebaeude_HS_Anhalt_2_12b5543d73.jpg',
   Coburg:
-    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+    'https://studienkolleg-coburg.de/wp-content/uploads/2026/01/20260121_0824561-1024x576.jpg',
   Wismar:
-    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT79qncnnqFEnoou_8E_0zZBVIkLKZ2pjTKpNEOp5NfsMOpwvhHZFpIpS8&s=10',
   Zittau:
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR1JKr6MFrsrMIgvA08u1yxJEfnYqFzHyXDMikoFvRx7_gbKjYYq70HJW_&s=10',
   Kaiserslautern:
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1668970788836-3f9faca33724?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
 };
 
 const DEFAULT_CAMPUS_IMAGE =
