@@ -70,7 +70,7 @@ const KURSE_COMPASS = [
     majors: 'Ngôn ngữ Anh/Pháp/Tây Ban Nha, Biên phiên dịch, Sư phạm ngoại ngữ',
     city: 'Universität Leipzig & Heidelberg',
     image:
-      'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=1400&q=85',
+      'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1400&q=85',
   },
 ];
 
@@ -154,10 +154,11 @@ export default function LandingPageClient({ schools }: Props) {
 
           <Link
             href="/studienkollegs"
-            className="inline-flex items-center gap-1 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
+            className="inline-flex items-center gap-1.5 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
+            title="Mở bảng tra cứu toàn màn hình"
           >
-            <span>Bảng toàn màn</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Bảng toàn màn</span>
+            <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
       </header>
@@ -173,7 +174,7 @@ export default function LandingPageClient({ schools }: Props) {
                 <span>{schools.length} TRƯỜNG</span>
               </div>
 
-              <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] leading-[1.02] tracking-[-0.02em] text-[#111111] animate-reveal-delay-1">
+              <h1 className="font-editorial text-3xl sm:text-5xl lg:text-7xl xl:text-[5.5rem] leading-[1.05] sm:leading-[1.02] tracking-tight text-[#111111] animate-reveal-delay-1">
                 <span className="block">Nước Đức</span>
                 <span className="block italic font-normal text-[#4A4944] mt-0.5 sm:mt-1">
                   không còn xa.

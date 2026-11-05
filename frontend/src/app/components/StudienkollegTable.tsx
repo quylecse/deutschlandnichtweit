@@ -831,7 +831,7 @@ export default function StudienkollegTable({
                 {activeTableTab === 'exam' && (
                   <div className="space-y-1.5 text-xs bg-[#EFECE6]/70 p-2.5 border border-[#D6D4CC]">
                     <div className="flex justify-between items-baseline gap-2">
-                      <span className="text-[#6E6D68] text-[11px]">Khối:</span>
+                      <span className="text-[#6E6D68] text-[11px]">Khối đào tạo:</span>
                       <span className="font-medium text-[#111111]">
                         {formatCoursesCompact(exam?.courses_offered)}
                       </span>
@@ -843,12 +843,6 @@ export default function StudienkollegTable({
                         context={exam?.raw_summary}
                         className="text-right"
                       />
-                    </div>
-                    <div className="flex justify-between items-center gap-2">
-                      <span className="text-[#6E6D68] text-[11px]">Hình thức:</span>
-                      <span className="border border-[#111111] px-1.5 py-0.2 text-[10px] font-medium text-[#111111]">
-                        {modeInfo.label}
-                      </span>
                     </div>
                   </div>
                 )}

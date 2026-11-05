@@ -16,7 +16,7 @@ export const CITY_IMAGES: Record<string, string> = {
   Karlsruhe:
     'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
   Leipzig:
-    'https://images.unsplash.com/photo-1507842229356-51c61504d3ab?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
   Hannover:
     'https://images.unsplash.com/photo-1584448141569-69f342da535c?auto=format&fit=crop&w=800&q=80',
   Darmstadt:
@@ -54,3 +54,4 @@ export function getCityImage(city?: string): string {
   if (!city) return DEFAULT_CAMPUS_IMAGE;
   return CITY_IMAGES[city] || DEFAULT_CAMPUS_IMAGE;
 }
+
