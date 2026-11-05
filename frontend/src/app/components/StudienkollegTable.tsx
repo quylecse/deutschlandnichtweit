@@ -5,15 +5,21 @@ import Link from 'next/link';
 import {
   ArrowUpDown,
   ArrowUpRight,
+  BookOpen,
+  Calendar,
   ChevronRight,
   Filter,
+  GraduationCap,
+  Landmark,
   Mail,
+  MapPin,
   Phone,
   Search,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
 import { Studienkolleg } from '../types/studienkolleg';
+import { getCityImage } from '../lib/schoolImages';
 import {
   formatCoursesCompact,
   formatExamFeeShort,
@@ -599,18 +605,31 @@ export default function StudienkollegTable({
                     onClick={() => openSchoolDrawer(school)}
                     className="group hover:bg-[#EAE7DF] transition-colors cursor-pointer"
                   >
-                    <td className="py-4 px-4 text-xs text-[#787772] align-middle">
+                    <td className="py-3 px-4 text-xs text-[#787772] align-middle">
                       {String(idx + 1).padStart(2, '0')}
                     </td>
 
-                    <td className="py-4 px-4 align-middle">
-                      <div className="font-medium text-[#111111] group-hover:underline underline-offset-4">
-                        {school.name}
+                    <td className="py-3 px-4 align-middle">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={getCityImage(school.city)}
+                          alt={school.city}
+                          className="w-10 h-10 object-cover grayscale contrast-110 border border-[#111111] shrink-0"
+                          loading="lazy"
+                        />
+                        <div className="min-w-0">
+                          <div className="font-medium text-[#111111] group-hover:underline underline-offset-4 line-clamp-1">
+                            {school.name}
+                          </div>
+                          <span className="text-[11px] text-[#6E6D68] inline-flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" /> {school.city}
+                          </span>
+                        </div>
                       </div>
                     </td>
 
-                    <td className="py-4 px-4 align-middle">
-                      <span className="text-[#111111]">{school.city}</span>
+                    <td className="py-3 px-4 align-middle">
+                      <span className="text-[#111111] font-medium">{school.city}</span>
                       <span className="text-xs text-[#6E6D68] block">{school.state}</span>
                     </td>
 
@@ -783,20 +802,30 @@ export default function StudienkollegTable({
               <div
                 key={school.id}
                 onClick={() => openSchoolDrawer(school)}
-                className="p-4 active:bg-[#EAE7DF] transition-colors cursor-pointer"
+                className="p-3.5 sm:p-4 active:bg-[#EAE7DF] transition-colors cursor-pointer"
               >
                 {/* Header row: Index, City/State, Funding badge */}
-                <div className="flex items-center justify-between text-[11px] text-[#6E6D68] mb-1.5">
+                <div className="flex items-center justify-between text-[11px] text-[#6E6D68] mb-2">
                   <span className="font-mono">{String(idx + 1).padStart(2, '0')}. {school.city} · {school.state}</span>
                   <span className="border border-[#111111] px-1.5 py-0.2 text-[9px] uppercase font-medium text-[#111111]">
                     {fundingShort}
                   </span>
                 </div>
 
-                {/* School Name */}
-                <h3 className="font-editorial text-lg text-[#111111] leading-snug mb-2.5">
-                  {school.name}
-                </h3>
+                {/* School Name with Thumbnail */}
+                <div className="flex items-start gap-3 mb-2.5">
+                  <img
+                    src={getCityImage(school.city)}
+                    alt={school.city}
+                    className="w-12 h-12 object-cover grayscale contrast-110 border border-[#111111] shrink-0 mt-0.5"
+                    loading="lazy"
+                  />
+                  <div className="min-w-0">
+                    <h3 className="font-editorial text-base sm:text-lg text-[#111111] leading-snug line-clamp-2">
+                      {school.name}
+                    </h3>
+                  </div>
+                </div>
 
                 {/* Dynamic Content by Active Tab */}
                 {activeTableTab === 'exam' && (
@@ -919,9 +948,22 @@ export default function StudienkollegTable({
                 </button>
               </div>
 
-              <h2 className="font-editorial text-2xl sm:text-3xl text-[#111111] leading-tight mb-4 sm:mb-6">
-                {selectedSchool.name}
-              </h2>
+              {/* School Header with Campus Thumbnail */}
+              <div className="flex items-start gap-4 mb-5 sm:mb-6">
+                <img
+                  src={getCityImage(selectedSchool.city)}
+                  alt={selectedSchool.city}
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-cover grayscale contrast-115 border border-[#111111] shrink-0"
+                />
+                <div className="min-w-0">
+                  <h2 className="font-editorial text-xl sm:text-2xl lg:text-3xl text-[#111111] leading-tight mb-1">
+                    {selectedSchool.name}
+                  </h2>
+                  <span className="text-xs text-[#6E6D68] inline-flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5" /> {selectedSchool.city}, bang {selectedSchool.state}
+                  </span>
+                </div>
+              </div>
 
               {/* Drawer Internal Tabs */}
               <div className="grid grid-cols-3 border border-[#111111] divide-x divide-[#111111] mb-5 text-[11px] sm:text-xs">

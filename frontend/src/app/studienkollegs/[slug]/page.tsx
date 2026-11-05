@@ -10,6 +10,7 @@ import {
 } from '../../lib/studienkollegs';
 import SemesterDateDisplay from '../../components/SemesterDateDisplay';
 import SiteFooter from '../../components/SiteFooter';
+import { getCityImage } from '../../lib/schoolImages';
 import {
   StructuredSentenceList,
   StructuredSteps,
@@ -58,10 +59,21 @@ async function SchoolDetailContent({ params }: { params: Promise<{ slug: string 
         )}
       </div>
 
-      {/* School Title */}
-      <h1 className="font-editorial text-3xl sm:text-5xl lg:text-6xl text-[#111111] leading-[1.08] tracking-tight mb-8 sm:mb-10">
-        {school.name}
-      </h1>
+      {/* School Title & Campus Banner */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10">
+        <div className="max-w-2xl">
+          <h1 className="font-editorial text-3xl sm:text-5xl lg:text-6xl text-[#111111] leading-[1.08] tracking-tight">
+            {school.name}
+          </h1>
+        </div>
+        <div className="w-full md:w-56 h-36 border border-[#111111] overflow-hidden shrink-0">
+          <img
+            src={getCityImage(school.city)}
+            alt={school.city}
+            className="w-full h-full object-cover grayscale contrast-115 hover:grayscale-0 transition-all duration-500"
+          />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 border-t border-[#111111] pt-8 sm:pt-10">
         {/* Left Column: Key Specs & Contact */}

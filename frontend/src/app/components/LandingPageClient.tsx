@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowUpRight } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUpRight,
+  BookOpen,
+  CalendarCheck,
+  CheckCircle2,
+  FileCheck2,
+  GraduationCap,
+  Sparkles,
+} from 'lucide-react';
 import { Studienkolleg } from '../types/studienkolleg';
 import { formatValue } from '../lib/studienkollegs';
 import StudienkollegTable from './StudienkollegTable';
@@ -68,21 +77,25 @@ const KURSE_COMPASS = [
 const ROADMAP_STEPS = [
   {
     step: '01',
+    icon: FileCheck2,
     title: 'APS & Tiếng Đức B1/B2',
     detail: 'Thẩm định học thuật APS tại Việt Nam và hoàn thành chứng chỉ Goethe, Telc hoặc TestDaF.',
   },
   {
     step: '02',
+    icon: BookOpen,
     title: 'Xin Zulassung dự thi',
     detail: 'Nộp hồ sơ qua Uni-Assist hoặc cổng riêng của trường trước hạn kỳ Hè (15.01) / kỳ Đông (15.07).',
   },
   {
     step: '03',
+    icon: CalendarCheck,
     title: 'Thi Aufnahmetest tại Đức',
     detail: 'Làm bài thi trực tiếp gồm tiếng Đức (C-Test) và môn chuyên ngành tương ứng với khối đã chọn.',
   },
   {
     step: '04',
+    icon: GraduationCap,
     title: '2 học kỳ & Kỳ thi FSP',
     detail: 'Hoàn thành chương trình dự bị 1 năm và thi Feststellungsprüfung (FSP) để vào đại học.',
   },
@@ -308,23 +321,26 @@ export default function LandingPageClient({ schools }: Props) {
       {/* CONCISE 4-STEP ROADMAP STRIP */}
       <section className="max-w-[1440px] mx-auto border-b border-[#111111]">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#111111]">
-          {ROADMAP_STEPS.map((item) => (
-            <div
-              key={item.step}
-              className="p-5 sm:p-6 lg:p-8 bg-[#F6F5F0] hover:bg-[#EFECE6] transition-colors flex flex-col justify-between"
-            >
-              <div className="flex items-baseline justify-between mb-2 sm:mb-4">
-                <span className="font-editorial text-2xl sm:text-3xl text-[#111111]">{item.step}.</span>
-                <span className="text-[10px] uppercase tracking-[0.16em] text-[#6E6D68]">
-                  Cột mốc
-                </span>
+          {ROADMAP_STEPS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.step}
+                className="p-5 sm:p-6 lg:p-8 bg-[#F6F5F0] hover:bg-[#EFECE6] transition-colors flex flex-col justify-between group"
+              >
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <span className="font-editorial text-2xl sm:text-3xl text-[#111111]">{item.step}.</span>
+                  <div className="w-8 h-8 rounded-full border border-[#111111]/30 flex items-center justify-center bg-[#F6F5F0] group-hover:bg-[#111111] group-hover:text-[#F6F5F0] transition-colors">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-editorial text-lg sm:text-xl lg:text-2xl text-[#111111] mb-1.5 sm:mb-2">{item.title}</h3>
+                  <p className="text-xs text-[#5A5955] leading-relaxed">{item.detail}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-editorial text-lg sm:text-xl lg:text-2xl text-[#111111] mb-1.5 sm:mb-2">{item.title}</h3>
-                <p className="text-xs text-[#5A5955] leading-relaxed">{item.detail}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
