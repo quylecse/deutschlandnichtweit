@@ -23,7 +23,11 @@ export const metadata: Metadata = {
     "Tra cứu lịch thi Aufnahmetest, hạn nộp hồ sơ và đề mẫu các trường Studienkolleg tại Đức.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="vi"

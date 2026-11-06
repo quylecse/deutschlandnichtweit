@@ -45,6 +45,7 @@ jobs:
         working-directory: ./frontend
         run: |
           pnpm install --no-frozen-lockfile
+          pnpm exec next typegen
           pnpm exec tsc --noEmit
 
   # 2. Cronjob tự động gọi API đồng bộ dữ liệu Studienkolleg định kỳ
