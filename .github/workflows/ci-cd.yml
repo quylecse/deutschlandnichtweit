@@ -55,7 +55,10 @@ jobs:
     steps:
       - name: Trigger Backend Crawler Sync
         env:
-          BACKEND_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://deutschlandnichtweit.onrender.com' }}
+          SECRET_BACKEND_URL: ${{ secrets.PRODUCTION_BACKEND_URL }}
         run: |
-          curl -f -X POST "${BACKEND_URL%/}/api/crawler/sync"
+          BASE_URL="${SECRET_BACKEND_URL:-https://deutschlandnichtweit.onrender.com}"
+          BASE_URL="${BASE_URL%/}"
+          BASE_URL="${BASE_URL%/api}"
+          curl -f -X POST "${BASE_URL}/api/crawler/sync"
 

@@ -22,7 +22,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
 
     this.keepAliveTimer = setInterval(async () => {
       try {
-        const res = await fetch(`${publicUrl.replace(/\/$/, '')}/health`);
+        const res = await fetch(`${publicUrl.replace(/\/$/, '')}/api/health`);
         this.logger.debug(`Keep-alive ping status: ${res.status}`);
       } catch (err) {
         this.logger.warn(`Keep-alive ping failed: ${(err as Error).message}`);
