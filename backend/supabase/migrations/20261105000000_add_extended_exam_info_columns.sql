@@ -1,6 +1,4 @@
 -- Migration: Bổ sung các trường thông tin chi tiết cho bảng entrance_exam_info
--- Chạy script này trong Supabase SQL Editor để tạo các cột riêng biệt trong database.
-
 ALTER TABLE public.entrance_exam_info
   ADD COLUMN IF NOT EXISTS funding_type text,
   ADD COLUMN IF NOT EXISTS partner_universities text[] DEFAULT '{}',

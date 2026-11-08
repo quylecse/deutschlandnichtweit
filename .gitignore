@@ -30,4 +30,10 @@ pnpm-debug.log*
 Thumbs.db
 coverage/
 **/coverage/
+.vscode/
+
+# Supabase CLI temp files
+**/supabase/.temp/
+**/supabase/.branches/
+
 
