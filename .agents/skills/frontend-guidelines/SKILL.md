@@ -80,3 +80,4 @@ Giao diện DeutschlandNichtWeit được lấy cảm hứng từ phong cách b�
 - **Rule 15 (OWASP & Cookie Security)**:
   - Mọi request gửi lên Backend đều phải bật `credentials: 'include'` để đính kèm cookie `HttpOnly`.
   - Không bao giờ lưu Access Token hoặc Refresh Token trong `localStorage` hay `sessionStorage`.
+

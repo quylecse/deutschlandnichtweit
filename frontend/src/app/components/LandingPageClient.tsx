@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Studienkolleg } from '../types/studienkolleg';
 import { formatValue } from '../lib/studienkollegs';
+import { useTableFilterStore } from '../stores/useTableFilterStore';
 import StudienkollegTable from './StudienkollegTable';
 import SiteFooter from './SiteFooter';
 
@@ -103,7 +104,7 @@ const ROADMAP_STEPS = [
 
 export default function LandingPageClient({ schools }: Props) {
   const [activeKursIdx, setActiveKursIdx] = useState(0);
-  const [tableCourseFilter, setTableCourseFilter] = useState('ALL');
+  const setSelectedCourse = useTableFilterStore((state) => state.setSelectedCourse);
   const [times, setTimes] = useState<{ vn: string; de: string }>({
     vn: '--:--',
     de: '--:--',
@@ -132,7 +133,7 @@ export default function LandingPageClient({ schools }: Props) {
   const currentKurs = KURSE_COMPASS[activeKursIdx];
 
   const handleFilterByKurs = (kursCode: string) => {
-    setTableCourseFilter(kursCode);
+    setSelectedCourse(kursCode);
     const el = document.getElementById('bangtracuu');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -350,7 +351,6 @@ export default function LandingPageClient({ schools }: Props) {
         <StudienkollegTable
           schools={schools}
           showHeader={true}
-          initialCourse={tableCourseFilter}
         />
       </section>
 
