@@ -3,10 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore, type AuthUser } from '../stores/useAuthStore';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// Sử dụng Next.js BFF API route cùng domain, tránh hoàn toàn lỗi localhost, CORS trên production
+const AUTH_API_BASE = '/api/auth';
 
-// Bảng map mã lỗi chuẩn hóa Rule 14 từ backend sang tiếng Việt thân thiện
 export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   INVALID_CREDENTIALS: 'Email hoặc mật khẩu không chính xác.',
   EMAIL_ALREADY_EXISTS: 'Email này đã được đăng ký tài khoản. Bạn có thể đăng nhập ngay.',
@@ -16,6 +15,7 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   UNAUTHORIZED: 'Bạn cần đăng nhập để thực hiện thao tác này.',
   USER_NOT_FOUND: 'Không tìm thấy thông tin tài khoản.',
   ACCOUNT_LOCKED: 'Tài khoản tạm thời bị khóa vì bảo mật. Vui lòng thử lại sau.',
+  CANNOT_CONNECT_TO_AUTH_SERVER: 'Không thể kết nối đến máy chủ xác thực. Vui lòng kiểm tra biến môi trường hoặc liên hệ quản trị.',
   INTERNAL_SERVER_ERROR: 'Lỗi hệ thống máy chủ. Vui lòng thử lại sau giây lát.',
   NETWORK_ERROR: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.',
 };
@@ -36,6 +36,17 @@ export interface SignUpCredentials {
   password: string;
 }
 
+// Hàm parse JSON phòng thủ (Defensive JSON Parsing) tuyệt đối không crash nếu nhận về HTML
+async function safeJsonParse(res: Response) {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    console.error('Phản hồi không phải JSON:', text.slice(0, 150));
+    throw new Error('CANNOT_CONNECT_TO_AUTH_SERVER');
+  }
+  return res.json();
+}
+
 // 1. Hook lấy thông tin người dùng hiện tại (Session check)
 export function useCurrentUser() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -45,9 +56,8 @@ export function useCurrentUser() {
     queryKey: ['auth', 'me'],
     queryFn: async (): Promise<AuthUser | null> => {
       try {
-        const res = await fetch(`${API_BASE_URL}/auth/me`, {
+        const res = await fetch(`${AUTH_API_BASE}/me`, {
           method: 'GET',
-          credentials: 'include', // Mang theo HttpOnly cookie
         });
 
         if (!res.ok) {
@@ -55,7 +65,7 @@ export function useCurrentUser() {
           return null;
         }
 
-        const data = await res.json();
+        const data = await safeJsonParse(res);
         const user: AuthUser = data.user;
         setUser(user);
         return user;
@@ -64,7 +74,7 @@ export function useCurrentUser() {
         return null;
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 phút
+    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 }
@@ -76,14 +86,13 @@ export function useSignIn() {
 
   return useMutation({
     mutationFn: async (credentials: SignInCredentials) => {
-      const res = await fetch(`${API_BASE_URL}/auth/signin`, {
+      const res = await fetch(`${AUTH_API_BASE}/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Nhận cookie HttpOnly từ backend
         body: JSON.stringify(credentials),
       });
 
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (!res.ok) {
         throw new Error(data.message || 'LOGIN_FAILED');
       }
@@ -101,13 +110,13 @@ export function useSignIn() {
 export function useSignUp() {
   return useMutation({
     mutationFn: async (credentials: SignUpCredentials) => {
-      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const res = await fetch(`${AUTH_API_BASE}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       });
 
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (!res.ok) {
         throw new Error(data.message || 'SIGNUP_FAILED');
       }
@@ -124,9 +133,8 @@ export function useSignOut() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+      const res = await fetch(`${AUTH_API_BASE}/logout`, {
         method: 'POST',
-        credentials: 'include',
       });
       return res.ok;
     },
@@ -137,4 +145,3 @@ export function useSignOut() {
     },
   });
 }
-
