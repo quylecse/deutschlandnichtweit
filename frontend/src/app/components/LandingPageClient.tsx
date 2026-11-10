@@ -15,6 +15,8 @@ import {
 import { Studienkolleg } from '../types/studienkolleg';
 import { formatValue } from '../lib/studienkollegs';
 import { useTableFilterStore } from '../stores/useTableFilterStore';
+import { useCurrentUser } from '../hooks/useAuth';
+import { useAuthStore } from '../stores/useAuthStore';
 import StudienkollegTable from './StudienkollegTable';
 import SiteFooter from './SiteFooter';
 
@@ -105,6 +107,8 @@ const ROADMAP_STEPS = [
 export default function LandingPageClient({ schools }: Props) {
   const [activeKursIdx, setActiveKursIdx] = useState(0);
   const setSelectedCourse = useTableFilterStore((state) => state.setSelectedCourse);
+  const { data: user } = useCurrentUser();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [times, setTimes] = useState<{ vn: string; de: string }>({
     vn: '--:--',
     de: '--:--',
@@ -153,14 +157,32 @@ export default function LandingPageClient({ schools }: Props) {
             Hà Nội {times.vn} · Berlin {times.de}
           </span>
 
-          <Link
-            href="/studienkollegs"
-            className="inline-flex items-center gap-1.5 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
-            title="Mở bảng tra cứu toàn màn hình"
-          >
-            <span className="hidden sm:inline">Bảng toàn màn</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-4">
+            {isAuthenticated || user ? (
+              <Link
+                href="/account"
+                className="text-[#111111] font-medium hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
+              >
+                Tài khoản ({user?.email?.split('@')[0]})
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs"
+              >
+                Đăng nhập
+              </Link>
+            )}
+
+            <Link
+              href="/studienkollegs"
+              className="inline-flex items-center gap-1.5 text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs border-l border-[#D6D4CC] pl-4"
+              title="Mở bảng tra cứu toàn màn hình"
+            >
+              <span className="hidden sm:inline">Bảng toàn màn</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </header>
 
