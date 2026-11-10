@@ -82,6 +82,13 @@ export class CrawlerService {
         );
     }
 
+    private getRootDomain(hostname: string): string {
+        const clean = hostname.toLowerCase().replace(/^www\./, '');
+        const parts = clean.split('.');
+        if (parts.length <= 2) return clean;
+        return parts.slice(-2).join('.');
+    }
+
     private scoreLink(
         targetUrl: string,
         linkText: string,
@@ -118,16 +125,22 @@ export class CrawlerService {
 
         let score = 0;
 
-        // High priority keywords for Studienkolleg admission, exam, fees, documents, partners, contact
+        // High priority keywords for Studienkolleg admission, exam dates, German level, fees, documents, partners, contact
         const highPriority = [
             'studienkolleg',
             'aufnahmetest',
             'aufnahmepruefung',
             'aufnahmeprüfung',
+            'einstufungstest',
             'aufnahme',
             'bewerbung',
             'bewerben',
             'zulassung',
+            'voraussetzung',
+            'sprachkenntnis',
+            'deutschkenntnis',
+            'sprachnachweis',
+            'zertifikat',
             'merkblatt',
             'uni-assist',
             'uniassist',
@@ -139,12 +152,16 @@ export class CrawlerService {
             'gebuehr',
             'gebühr',
             'kosten',
+            'entgelt',
             'kontakt',
             'ansprechpartner',
             'unterlagen',
             'dokument',
             'termin',
             'frist',
+            'zeitplan',
+            'pruefungstermin',
+            'prüfungstermin',
         ];
         for (const kw of highPriority) {
             if (combined.includes(kw)) score += 5;
@@ -169,6 +186,9 @@ export class CrawlerService {
             'online',
             'praesenz',
             'präsenz',
+            'ablauf',
+            'wintersemester',
+            'sommersemester',
             'application',
             'admission',
             'entrance',
@@ -179,13 +199,13 @@ export class CrawlerService {
             if (combined.includes(kw)) score += 3;
         }
 
-        // Boost if URL shares path prefix with school's website_url or crawler_url
+        // Boost if URL shares hostname/root-domain or path prefix with school's website_url or crawler_url
         for (const base of baseUrls) {
             try {
                 const baseObj = new URL(base);
                 const targetObj = new URL(targetUrl);
                 if (targetObj.hostname === baseObj.hostname) {
-                    score += 2;
+                    score += 3;
                     const basePath = baseObj.pathname.replace(/\/$/, '');
                     if (
                         basePath.length > 1 &&
@@ -193,6 +213,11 @@ export class CrawlerService {
                     ) {
                         score += 6;
                     }
+                } else if (
+                    this.getRootDomain(targetObj.hostname) ===
+                    this.getRootDomain(baseObj.hostname)
+                ) {
+                    score += 2;
                 }
             } catch {
                 // Ignore URL parse errors
@@ -287,12 +312,12 @@ export class CrawlerService {
                 .trim()
                 .slice(0, 1500);
 
-            // 3. Collect all links on the page
+            // 3. Collect all links on the page (supporting same root domain & subdomains)
             const linksMap = new Map<string, DiscoveredLink>();
-            const baseHostnames = new Set<string>();
+            const baseRootDomains = new Set<string>();
             for (const b of baseUrls) {
                 try {
-                    baseHostnames.add(new URL(b).hostname.replace(/^www\./, ''));
+                    baseRootDomains.add(this.getRootDomain(new URL(b).hostname));
                 } catch {
                     // ignore
                 }
@@ -317,8 +342,8 @@ export class CrawlerService {
                 const isPdf = this.isPdfUrl(fullUrl, text);
                 let isSameDomain = false;
                 try {
-                    const host = new URL(fullUrl).hostname.replace(/^www\./, '');
-                    isSameDomain = baseHostnames.has(host);
+                    const rootHost = this.getRootDomain(new URL(fullUrl).hostname);
+                    isSameDomain = baseRootDomains.has(rootHost);
                 } catch {
                     isSameDomain = false;
                 }
@@ -339,18 +364,17 @@ export class CrawlerService {
                 }
             });
 
-            // 4. Clean non-content tags and extract main text
+            // 4. Clean non-content tags and extract full main text (avoid .first() bug across multiple articles)
             $('script, style, noscript, svg, nav').remove();
 
-            const bodyText = $('main, #content, article, body')
-                .first()
-                .text()
-                .replace(/\s+/g, ' ')
-                .trim();
+            let bodyText = $('main, #content, #main').text().replace(/\s+/g, ' ').trim();
+            if (bodyText.length < 400) {
+                bodyText = $('body').text().replace(/\s+/g, ' ').trim();
+            }
 
             const combinedText = contactBlockText
-                ? `${bodyText.slice(0, 9000)}\n[THÔNG TIN LIÊN HỆ / FOOTER]: ${contactBlockText}`
-                : bodyText.slice(0, 10000);
+                ? `${bodyText.slice(0, 10000)}\n[THÔNG TIN LIÊN HỆ / FOOTER]: ${contactBlockText}`
+                : bodyText.slice(0, 11000);
 
             return {
                 url,
@@ -385,7 +409,7 @@ export class CrawlerService {
             const cleaned = (text || '').replace(/\s+/g, ' ').trim();
             if (!cleaned) return null;
 
-            return `=== NỘI DUNG FILE PDF (${pdfUrl}) ===\n${cleaned.slice(0, 8000)}`;
+            return `=== NỘI DUNG FILE PDF (${pdfUrl}) ===\n${cleaned.slice(0, 8500)}`;
         } catch (error) {
             this.logger.warn(
                 `Failed to parse PDF from ${pdfUrl}: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -433,22 +457,22 @@ export class CrawlerService {
             }
         }
 
-        // 2. Select up to 5 top-scoring sub-pages to follow
-        const candidateSubPages = Array.from(allDiscoveredLinks.values())
+        // 2. DEPTH 1: Select up to 6 top-scoring sub-pages from primary pages
+        const depth1Candidates = Array.from(allDiscoveredLinks.values())
             .filter((l) => !l.isPdf && !visitedUrls.has(l.url) && l.score >= 4)
             .sort((a, b) => b.score - a.score)
-            .slice(0, 5);
+            .slice(0, 6);
 
-        if (candidateSubPages.length > 0) {
+        if (depth1Candidates.length > 0) {
             this.logger.log(
-                `Following ${candidateSubPages.length} sub-links for ${stk.slug}: ${candidateSubPages.map((c) => c.url).join(', ')}`,
+                `[Depth 1] Following ${depth1Candidates.length} sub-links for ${stk.slug}: ${depth1Candidates.map((c) => c.url).join(', ')}`,
             );
-            for (const sub of candidateSubPages) {
+            for (const sub of depth1Candidates) {
                 visitedUrls.add(sub.url);
             }
 
             const subResults = await Promise.allSettled(
-                candidateSubPages.map((sub) =>
+                depth1Candidates.map((sub) =>
                     this.fetchHtmlPage(sub.url, baseUrls),
                 ),
             );
@@ -457,7 +481,7 @@ export class CrawlerService {
                 if (res.status === 'fulfilled' && res.value) {
                     const page = res.value;
                     pageSections.push(
-                        `=== TRANG PHỤ (${page.url}) ===\n${page.text.slice(0, 6000)}`,
+                        `=== TRANG PHỤ TẦNG 1 (${page.url}) ===\n${page.text.slice(0, 7000)}`,
                     );
                     page.emails.forEach((e) => allEmails.add(e));
                     page.phones.forEach((p) => allPhones.add(p));
@@ -471,24 +495,67 @@ export class CrawlerService {
             }
         }
 
-        // 3. Select up to 3 top-scoring PDF files to read
+        // 3. DEPTH 2: Follow up to 5 deeper links specifically targeting exam dates, German level, fees, or admission rules
+        const depth2Candidates = Array.from(allDiscoveredLinks.values())
+            .filter((l) => {
+                if (l.isPdf || visitedUrls.has(l.url) || l.score < 6) return false;
+                const combined = `${l.url} ${l.text}`.toLowerCase();
+                return /termin|frist|aufnahm|pruefung|prüfung|test|sprach|deutsch|voraussetzung|bewerb|zulassung|gebühr|gebuehr|kosten/i.test(
+                    combined,
+                );
+            })
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 5);
+
+        if (depth2Candidates.length > 0) {
+            this.logger.log(
+                `[Depth 2] Following ${depth2Candidates.length} deep sub-links for ${stk.slug}: ${depth2Candidates.map((c) => c.url).join(', ')}`,
+            );
+            for (const sub of depth2Candidates) {
+                visitedUrls.add(sub.url);
+            }
+
+            const depth2Results = await Promise.allSettled(
+                depth2Candidates.map((sub) =>
+                    this.fetchHtmlPage(sub.url, baseUrls),
+                ),
+            );
+
+            for (const res of depth2Results) {
+                if (res.status === 'fulfilled' && res.value) {
+                    const page = res.value;
+                    pageSections.push(
+                        `=== TRANG PHỤ TẦNG 2 (${page.url}) ===\n${page.text.slice(0, 6500)}`,
+                    );
+                    page.emails.forEach((e) => allEmails.add(e));
+                    page.phones.forEach((p) => allPhones.add(p));
+                    for (const link of page.links) {
+                        const existing = allDiscoveredLinks.get(link.url);
+                        if (!existing || link.score > existing.score) {
+                            allDiscoveredLinks.set(link.url, link);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Select up to 4 top-scoring PDF files to read
         const candidatePdfs = Array.from(allDiscoveredLinks.values())
             .filter((l) => l.isPdf && !visitedUrls.has(l.url))
             .sort((a, b) => {
-                // Prioritize info/merkblatt/bewerbung/aufnahmetest PDFs
-                const aInfo = /merkblatt|info|bewerb|aufnahm|zulassung|termin|gebühr|ordnung|faq/i.test(
+                const aInfo = /merkblatt|info|bewerb|aufnahm|zulassung|termin|frist|sprach|gebühr|ordnung|faq/i.test(
                     `${a.url} ${a.text}`,
                 )
-                    ? 10
+                    ? 12
                     : 0;
-                const bInfo = /merkblatt|info|bewerb|aufnahm|zulassung|termin|gebühr|ordnung|faq/i.test(
+                const bInfo = /merkblatt|info|bewerb|aufnahm|zulassung|termin|frist|sprach|gebühr|ordnung|faq/i.test(
                     `${b.url} ${b.text}`,
                 )
-                    ? 10
+                    ? 12
                     : 0;
                 return b.score + bInfo - (a.score + aInfo);
             })
-            .slice(0, 3);
+            .slice(0, 4);
 
         if (candidatePdfs.length > 0) {
             this.logger.log(
@@ -506,7 +573,7 @@ export class CrawlerService {
 
         const formattedLinks = Array.from(allDiscoveredLinks.values())
             .sort((a, b) => b.score - a.score)
-            .slice(0, 50)
+            .slice(0, 60)
             .map((l) => `- [${l.text}](${l.url})${l.isPdf ? ' [PDF]' : ''}`)
             .join('\n');
 
@@ -526,7 +593,7 @@ export class CrawlerService {
             pageSections.join('\n\n'),
         ]
             .join('\n')
-            .slice(0, 45000);
+            .slice(0, 65000);
     }
 
     private async extractWithAi(
@@ -546,7 +613,7 @@ export class CrawlerService {
                 application_portal: 'Chưa có thông tin',
                 required_documents: [],
                 application_fee: 'Chưa có thông tin',
-                exam_fee: 'Chưa có thông tin',
+                exam_fee: 'Miễn phí',
                 exam_mode: 'Chưa có thông tin',
                 contact_email: null,
                 contact_phone: null,
@@ -560,24 +627,27 @@ export class CrawlerService {
             'https://generativelanguage.googleapis.com/v1beta/interactions';
 
         const prompt = `Bạn là chuyên gia phân tích dữ liệu tuyển sinh các trường Dự bị Đại học Đức (Studienkolleg).
-Hãy phân tích toàn bộ nội dung trang web, các trang phụ và nội dung file PDF được cung cấp dưới đây của trường "${stk.name}" (${stk.city}, bang ${stk.state}) để trích xuất đầy đủ, chính xác các thông tin phục vụ học sinh Việt Nam.
+Hãy phân tích toàn bộ nội dung trang web chính, các trang phụ (Tầng 1 & Tầng 2) và nội dung file PDF được cung cấp dưới đây của trường "${stk.name}" (${stk.city}, bang ${stk.state}) để trích xuất đầy đủ, chính xác các thông tin phục vụ học sinh Việt Nam.
 
 QUY TẮC BẮT BUỘC:
 1. TẤT CẢ nội dung mô tả trả về PHẢI BẰNG TIẾNG VIỆT rõ ràng, tự nhiên, chính xác.
 2. Không tự bịa đặt số liệu ngày tháng hay lệ phí nếu không được đề cập. Tuy nhiên:
    - Với "funding_type": Xác định rõ là "Công lập (Staatlich)" hay "Tư nhân (Privat)" dựa vào tên trường (Staatliches Studienkolleg / thuộc đại học công lập vs. tư thục) và nội dung trang.
    - Với "partner_universities": Liệt kê danh sách tên các trường Đại học / Đại học Khoa học Ứng dụng (Universität / Technische Universität / Hochschule / Fachhochschule) liên kết hoặc trực thuộc Studienkolleg này.
-   - Với "exam_date_raw" và "application_deadline": Nếu có ngày tháng cụ thể, BẮT BUỘC giữ định dạng ngày DD.MM.YYYY kèm ký hiệu kỳ học "(WiSe)" cho kỳ Đông hoặc "(SoSe)" cho kỳ Hè (ví dụ: "13.06.2026 (WiSe 2026/2027), 16.01.2027 (SoSe 2027)" hoặc "01.05. (WiSe), 01.11. (SoSe)"). Nếu hạn nộp phụ thuộc vào từng trường đại học đối tác, hãy ghi rõ bằng tiếng Việt. Nếu hoàn toàn không có thông tin, trả về "Chưa có thông tin".
+   - Với "exam_date_raw" và "application_deadline": Đọc kỹ các trang phụ và PDF để tìm lịch thi Aufnahmetest và hạn nộp hồ sơ. Nếu có ngày tháng cụ thể, BẮT BUỘC giữ định dạng ngày DD.MM.YYYY kèm ký hiệu kỳ học "(WiSe)" cho kỳ Đông hoặc "(SoSe)" cho kỳ Hè (ví dụ: "13.06.2026 (WiSe), 16.01.2027 (SoSe)" hoặc "15.07. (WiSe), 15.01. (SoSe)"). Nếu hạn nộp phụ thuộc vào từng trường đại học đối tác, hãy ghi rõ bằng tiếng Việt. Nếu hoàn toàn không có thông tin, trả về "Chưa có thông tin".
    - Với "courses_offered": Chuẩn hóa mã khối học thành dạng ["T-Kurs", "M-Kurs", "W-Kurs", "G-Kurs", "S-Kurs"] (hoặc mã khối đặc thù của FH như "TI-Kurs", "WW-Kurs", "GD-Kurs", "SW-Kurs" nếu trường dùng hệ FH).
    - Với "subjects": Trả về danh sách môn thi đầu vào bằng tiếng Việt (ví dụ: ["Tiếng Đức (C-Test)", "Toán học", "Vật lý", "Hóa học", "Sinh học"]).
    - Với "application_portal": Giải thích rõ bằng tiếng Việt cách thức nộp hồ sơ đăng ký theo từng bước (1. ..., 2. ...): nộp qua cổng Uni-Assist, nộp trực tiếp qua Portal riêng của trường, hay phải nộp hồ sơ qua một trường Đại học liên kết để xin thư mời dự thi (Zulassung zum Aufnahmetest).
-   - Với "required_documents": Danh sách các tài liệu/hồ sơ cần nộp khi đăng ký bằng tiếng Việt (ví dụ: Chứng chỉ tiếng Đức trình độ tối thiểu B1/B2, Chứng chỉ APS, Bằng tốt nghiệp THPT và học bạ dịch thuật công chứng, Hộ chiếu, Sơ yếu lý lịch...).
+   - Với "required_documents": Danh sách các tài liệu/hồ sơ cần nộp khi đăng ký bằng tiếng Việt. Mục đầu tiên BẮT BUỘC nêu rõ điều kiện trình độ tiếng Đức đầu vào tối thiểu (B1 hay B2) và các chứng chỉ được chấp nhận (ví dụ: "Chứng chỉ tiếng Đức tối thiểu B1/B2 (Goethe, telc, ÖSD, DSD, TestDaF)").
    - Với "application_fee": Thông tin về lệ phí nộp và xử lý hồ sơ bằng tiếng Việt (ví dụ: phí xử lý qua Uni-Assist 75 EUR / 30 EUR, phí xét duyệt của trường, hoặc "Miễn phí xử lý tại trường").
-   - Với "exam_fee": Thông tin về lệ phí dự thi Aufnahmetest (và học phí nếu có) bằng tiếng Việt (ví dụ: "Miễn phí dự thi (trường công lập)" hoặc mức lệ phí thi cụ thể).
-   - Với "exam_mode": Thông tin về hình thức thi bằng tiếng Việt: "Thi trực tiếp tại chỗ (Präsenz tại Đức)", "Thi trực tuyến (Online)", hoặc "Kết hợp Online & Tại chỗ" kèm chi tiết cụ thể (ví dụ thi trên máy tính tại trường hay làm bài giấy).
+   - Với "exam_fee": CHỈ ghi lệ phí dự thi kỳ thi đầu vào Aufnahmetest (Aufnahmeprüfungsgebühr).
+     + Nếu trường không thu lệ phí dự thi Aufnahmetest (hầu hết các trường Studienkolleg công lập như TU Berlin, Zittau/Görlitz, Leipzig... đều miễn phí thi), BẮT BUỘC trả về đúng cụm từ: "Miễn phí".
+     + TUYỆT ĐỐI KHÔNG đưa Semesterbeitrag (phí học kỳ/đóng góp sinh viên ~200-350 EUR đóng khi nhập học) hoặc phí xử lý hồ sơ Uni-Assist vào trường "exam_fee". (Thông tin Semesterbeitrag chỉ được viết trong phần "raw_summary").
+     + Chỉ khi trường thực sự thu phí dự thi Aufnahmetest (ví dụ: "50 EUR" hoặc "100 EUR") thì mới ghi số tiền.
+   - Với "exam_mode": Ghi rõ hình thức thi bằng tiếng Việt: "Tại chỗ" (nếu thi trực tiếp Präsenz tại trường/tại Đức), "Online" (nếu thi trực tuyến từ xa), hoặc "Online & Tại chỗ" kèm chi tiết ngắn gọn.
    - Với "contact_email" và "contact_phone": Trích xuất địa chỉ email và số điện thoại liên hệ chính thức của Studienkolleg (trả về null nếu không tìm thấy).
    - Với "sample_tests_url": Đường dẫn URL đầy đủ dẫn tới trang hoặc file PDF đề thi mẫu (Aufnahmetest Muster / Beispieltest) nếu có, hoặc null.
-   - Với "raw_summary": Viết một bản tổng hợp chi tiết bằng tiếng Việt được chia thành 3–4 đoạn văn ngắn (phân tách nhau bằng ký tự xuống dòng \\n\\n) theo các ý: (1) Tổng quan trường & các khối đào tạo, (2) Điều kiện tiếng Đức & quy trình nộp hồ sơ, (3) Cấu trúc và hình thức bài thi Aufnahmetest, (4) Học phí, lệ phí và lưu ý quan trọng.
+   - Với "raw_summary": Viết một bản tổng hợp chi tiết bằng tiếng Việt được chia thành 3–4 đoạn văn ngắn (phân tách nhau bằng ký tự xuống dòng \\n\\n) theo các ý: (1) Tổng quan trường & các khối đào tạo, (2) Điều kiện tiếng Đức đầu vào & quy trình nộp hồ sơ, (3) Cấu trúc, lịch thi và hình thức bài thi Aufnahmetest, (4) Lệ phí dự thi, phí học kỳ (Semesterbeitrag) và lưu ý quan trọng.
 
 BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT ĐỐI TƯỢNG JSON HỢP LỆ theo đúng cấu trúc sau (không dùng markdown block, không thêm văn bản ngoài JSON):
 {
@@ -588,9 +658,9 @@ BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT ĐỐI TƯỢNG JSON HỢP LỆ theo đ
   "subjects": ["Môn thi bằng tiếng Việt"],
   "courses_offered": ["T-Kurs", "M-Kurs", "W-Kurs", "G-Kurs", "S-Kurs"],
   "application_portal": "Mô tả chi tiết cổng/cách nộp hồ sơ bằng tiếng Việt",
-  "required_documents": ["Tài liệu 1 bằng tiếng Việt", "Tài liệu 2 bằng tiếng Việt"],
+  "required_documents": ["Chứng chỉ tiếng Đức tối thiểu B1/B2...", "Tài liệu 2 bằng tiếng Việt"],
   "application_fee": "Thông tin lệ phí nộp/xử lý hồ sơ bằng tiếng Việt",
-  "exam_fee": "Thông tin lệ phí thi (và học phí nếu có) bằng tiếng Việt",
+  "exam_fee": "'Miễn phí' hoặc mức lệ phí dự thi Aufnahmetest cụ thể (tuyệt đối không ghi Semesterbeitrag ở đây)",
   "exam_mode": "Hình thức thi (Tại chỗ / Online) bằng tiếng Việt",
   "contact_email": "string hoặc null",
   "contact_phone": "string hoặc null",

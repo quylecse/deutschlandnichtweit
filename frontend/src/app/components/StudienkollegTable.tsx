@@ -22,6 +22,7 @@ import { Studienkolleg } from '../types/studienkolleg';
 import { getCityImage } from '../lib/schoolImages';
 import {
   extractGermanLevel,
+  extractSortableTimestamp,
   formatCoursesCompact,
   formatExamFeeShort,
   formatExamModeShort,
@@ -45,7 +46,7 @@ interface Props {
   initialCourse?: string;
 }
 
-type SortField = 'name' | 'city' | 'state' | 'exam_date';
+type SortField = 'name' | 'city' | 'state' | 'exam_date' | 'application_deadline';
 type SortOrder = 'asc' | 'desc';
 type TableTab = 'exam' | 'application' | 'partners';
 type DrawerTab = 'overview' | 'application' | 'partners';
@@ -201,13 +202,31 @@ export default function StudienkollegTable({
       if (sortField === 'state') {
         return a.state.localeCompare(b.state, 'de') * dir;
       }
-      if (sortField === 'exam_date') {
-        const aHas = isMeaningfulValue(a.entrance_exam_info?.exam_date_raw);
-        const bHas = isMeaningfulValue(b.entrance_exam_info?.exam_date_raw);
+      if (sortField === 'exam_date' || sortField === 'application_deadline') {
+        const rawA =
+          sortField === 'exam_date'
+            ? a.entrance_exam_info?.exam_date_raw
+            : a.entrance_exam_info?.application_deadline;
+        const rawB =
+          sortField === 'exam_date'
+            ? b.entrance_exam_info?.exam_date_raw
+            : b.entrance_exam_info?.application_deadline;
+
+        const timeA = extractSortableTimestamp(rawA);
+        const timeB = extractSortableTimestamp(rawB);
+
+        if (timeA !== null && timeB !== null) {
+          if (timeA !== timeB) return (timeA - timeB) * dir;
+          return a.name.localeCompare(b.name, 'de');
+        }
+        if (timeA !== null || timeB !== null) {
+          return timeA !== null ? -1 : 1;
+        }
+
+        const aHas = isMeaningfulValue(rawA);
+        const bHas = isMeaningfulValue(rawB);
         if (aHas !== bHas) return aHas ? -1 : 1;
-        const aVal = a.entrance_exam_info?.exam_date_raw || '';
-        const bVal = b.entrance_exam_info?.exam_date_raw || '';
-        return aVal.localeCompare(bVal, 'de') * dir;
+        return (rawA || '').localeCompare(rawB || '', 'de') * dir;
       }
       return 0;
     });
@@ -590,7 +609,16 @@ export default function StudienkollegTable({
               {activeTableTab === 'application' && (
                 <>
                   <th className="py-3.5 px-4 min-w-[170px] font-medium">Cổng nộp hồ sơ</th>
-                  <th className="py-3.5 px-4 min-w-[160px] font-medium">Hạn nộp hồ sơ</th>
+                  <th className="py-3.5 px-4 min-w-[160px]">
+                    <button
+                      type="button"
+                      onClick={() => toggleSort('application_deadline')}
+                      className="inline-flex items-center gap-1.5 hover:text-[#111111] cursor-pointer uppercase font-medium"
+                    >
+                      Hạn nộp hồ sơ
+                      <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
                   <th className="py-3.5 px-4 min-w-[130px] font-medium">Lệ phí dự thi</th>
                 </>
               )}
@@ -692,15 +720,8 @@ export default function StudienkollegTable({
                           />
                         </td>
 
-                        <td className="py-4 px-4 align-middle text-xs">
-                          <span className="inline-block border border-[#111111] px-2 py-0.5 text-[11px] font-medium text-[#111111]">
-                            {modeInfo.label}
-                          </span>
-                          {modeInfo.sub && (
-                            <span className="block text-[11px] text-[#6E6D68] mt-0.5">
-                              {modeInfo.sub}
-                            </span>
-                          )}
+                        <td className="py-4 px-4 align-middle text-xs font-medium text-[#111111] whitespace-nowrap">
+                          {modeInfo.label}
                         </td>
                       </>
                     )}
@@ -708,15 +729,8 @@ export default function StudienkollegTable({
                     {/* TAB 2: APPLICATION & FEES */}
                     {activeTableTab === 'application' && (
                       <>
-                        <td className="py-4 px-4 align-middle text-xs">
-                          <span className="inline-block border border-[#111111] bg-[#EFECE6] px-2 py-0.5 text-[11px] font-medium text-[#111111]">
-                            {portalInfo.badge}
-                          </span>
-                          {exam?.required_documents && exam.required_documents.length > 0 && (
-                            <span className="block text-[11px] text-[#6E6D68] mt-1">
-                              {exam.required_documents.length} mục hồ sơ yêu cầu
-                            </span>
-                          )}
+                        <td className="py-4 px-4 align-middle text-xs font-medium text-[#111111]">
+                          {portalInfo.badge}
                         </td>
 
                         <td className="py-4 px-4 align-middle text-xs">

@@ -176,25 +176,32 @@ export function formatFundingShort(funding?: string | null): 'Công lập' | 'T�
 
 export function formatExamModeShort(mode?: string | null): {
   label: string;
-  sub?: string;
 } {
   if (!isMeaningfulValue(mode)) return { label: '—' };
   const lower = mode!.toLowerCase();
-  const isOnline = lower.includes('trực tuyến') || lower.includes('online');
+  const hasNoOnline =
+    lower.includes('không có hình thức thi trực tuyến') ||
+    lower.includes('không thi online') ||
+    lower.includes('không tổ chức thi trực tuyến');
+  const isOnline =
+    !hasNoOnline && (lower.includes('trực tuyến') || lower.includes('online'));
   const isOnsite =
-    lower.includes('tại chỗ') || lower.includes('präsenz') || lower.includes('trực tiếp');
-  const isComputer = lower.includes('máy tính') || lower.includes('e-c-test');
+    lower.includes('tại chỗ') ||
+    lower.includes('präsenz') ||
+    lower.includes('trực tiếp') ||
+    lower.includes('tại trường') ||
+    lower.includes('tại đức');
 
-  if (isOnline && isOnsite && !lower.includes('không có hình thức thi trực tuyến')) {
-    return { label: 'Online & Tại chỗ', sub: isComputer ? 'Trên máy tính' : undefined };
+  if (isOnline && isOnsite) {
+    return { label: 'Online & Tại chỗ' };
   }
-  if (isOnline && !lower.includes('không có hình thức thi trực tuyến')) {
-    return { label: 'Thi Online', sub: 'Trực tuyến' };
+  if (isOnline) {
+    return { label: 'Online' };
   }
   if (isOnsite) {
-    return { label: 'Tại chỗ (Präsenz)', sub: isComputer ? 'Trên máy tính' : 'Tại trường' };
+    return { label: 'Tại chỗ' };
   }
-  return { label: mode!.length > 28 ? `${mode!.slice(0, 26)}…` : mode! };
+  return { label: mode!.length > 24 ? `${mode!.slice(0, 22)}…` : mode! };
 }
 
 export function formatPortalShort(portal?: string | null): {
@@ -248,16 +255,96 @@ export function formatPortalShort(portal?: string | null): {
 }
 
 export function formatExamFeeShort(examFee?: string | null): string {
-  if (!isMeaningfulValue(examFee)) return '—';
-  const lower = examFee!.toLowerCase();
-  const euroMatch = examFee!.match(/(\d+\s*(?:EUR|€))/i);
-  if (lower.includes('miễn phí dự thi') || lower.startsWith('miễn phí')) {
-    return 'Miễn phí thi';
+  if (!isMeaningfulValue(examFee)) return 'Miễn phí';
+
+  const raw = examFee!.trim();
+  const lower = raw.toLowerCase();
+
+  // Nếu khẳng định miễn phí dự thi / không thu lệ phí thi
+  if (
+    lower.includes('miễn phí dự thi') ||
+    lower.includes('miễn phí thi') ||
+    lower.includes('không thu lệ phí dự thi') ||
+    lower.includes('không thu phí dự thi') ||
+    lower.includes('không mất phí dự thi') ||
+    lower.includes('không có lệ phí thi') ||
+    lower === 'miễn phí' ||
+    lower.startsWith('miễn phí')
+  ) {
+    return 'Miễn phí';
   }
+
+  // Tách thành từng mệnh đề để loại bỏ các câu nhắc tới Semesterbeitrag / phí học kỳ / Uni-Assist
+  const clauses = raw.split(/[.;\n]|(?:\bnhưng\b|\btuy nhiên\b|\bngoài ra\b)/i);
+  const examOnlyClauses = clauses.filter((clause) => {
+    const c = clause.toLowerCase();
+    const isSemesterFee =
+      c.includes('semesterbeitrag') ||
+      c.includes('phí học kỳ') ||
+      c.includes('đóng góp học kỳ') ||
+      c.includes('lệ phí học kỳ') ||
+      c.includes('học phí') ||
+      c.includes('uni-assist') ||
+      c.includes('uniassist') ||
+      c.includes('khi nhập học');
+    return !isSemesterFee;
+  });
+
+  const filteredText = examOnlyClauses.join(' ').trim();
+  if (!filteredText) {
+    return 'Miễn phí';
+  }
+
+  const filteredLower = filteredText.toLowerCase();
+  if (
+    filteredLower.includes('miễn phí') ||
+    filteredLower.includes('không thu') ||
+    filteredLower.includes('không mất phí')
+  ) {
+    return 'Miễn phí';
+  }
+
+  const euroMatch = filteredText.match(/(\d+(?:[.,]\d+)?\s*(?:EUR|€))/i);
   if (euroMatch) {
-    return `${euroMatch[1].toUpperCase().replace('€', ' EUR')}`;
+    return euroMatch[1].toUpperCase().replace('€', ' EUR').replace(/\s+/g, ' ').trim();
   }
-  return examFee!.length > 25 ? `${examFee!.slice(0, 24)}…` : examFee!;
+
+  return 'Miễn phí';
+}
+
+/**
+ * Trích xuất timestamp (ms) từ chuỗi ngày tháng kiểu Đức (DD.MM.YYYY hoặc DD.MM.)
+ * Dùng để sort chính xác theo thời gian cho cột Ngày thi và Hạn nộp hồ sơ.
+ * Trả về null nếu chuỗi không chứa ngày tháng cụ thể.
+ */
+export function extractSortableTimestamp(raw?: string | null): number | null {
+  if (!isMeaningfulValue(raw)) return null;
+
+  const text = raw!;
+  const regex = /\b(\d{1,2})\.(\d{1,2})\.(?:(\d{2,4}))?/g;
+  const timestamps: number[] = [];
+  const currentYear = new Date().getFullYear();
+
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    if (day < 1 || day > 31 || month < 1 || month > 12) continue;
+
+    let year = match[3] ? parseInt(match[3], 10) : currentYear;
+    if (year < 100) {
+      year += 2000;
+    }
+
+    const time = Date.UTC(year, month - 1, day);
+    if (!Number.isNaN(time)) {
+      timestamps.push(time);
+    }
+  }
+
+  if (timestamps.length === 0) return null;
+
+  return Math.min(...timestamps);
 }
 
 /**
