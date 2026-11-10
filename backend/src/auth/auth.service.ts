@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -39,13 +40,51 @@ export class AuthService {
     private readonly authSessionsService: AuthSessionsService,
   ) {}
 
-  async signUp(signUpDto: SignupDto) {
-    // =======================================================
-    // BƯỚC 1: TẠO USER (Lỗi ở đây thì không cần rollback gì cả)
-    // =======================================================
+  async signUp(signUpDto: SignupDto): Promise<{ code: string }> {
+    const email = signUpDto.email.toLowerCase().trim();
     const passwordHash = await bcrypt.hash(signUpDto.password, 10);
+
+    // Kiểm tra xem email đã được đăng ký trước đó chưa
+    const existingUser = await this.userService.findByEmailWithPassword(email);
+
+    if (existingUser) {
+      // Trường hợp 1: Tài khoản đã kích hoạt email -> Chặn đăng ký trùng
+      if (existingUser.emailVerified) {
+        throw new ConflictException('EMAIL_ALREADY_EXISTS');
+      }
+
+      // Trường hợp 2: Tài khoản đã đăng ký nhưng CHƯA kích hoạt (link hết hạn hoặc mất mail)
+      // Cập nhật lại mật khẩu mới và gửi lại email xác thực (tránh kẹt/treo tài khoản)
+      await this.userService.updatePassword(existingUser.id, passwordHash);
+      await this.pendingLinksRepo.clearExistingTokens(existingUser.id, 'VERIFY_EMAIL');
+
+      try {
+        const verifyToken = generateVerificationToken();
+        await this.pendingLinksRepo.create(
+          verifyToken,
+          existingUser.id,
+          'VERIFY_EMAIL',
+          VERIFY_LINK_TTL_MS,
+        );
+        await this.mailService.sendVerificationEmail(existingUser.email, verifyToken);
+
+        return { code: 'SIGNUP_SUCCESS' };
+      } catch (error) {
+        console.error('Lỗi khi gửi lại email xác thực cho tài khoản chưa kích hoạt:', error);
+        await this.pendingLinksRepo
+          .clearExistingTokens(existingUser.id, 'VERIFY_EMAIL')
+          .catch((err: unknown) => {
+            console.error('CRITICAL: FAILED_TO_ROLLBACK_PENDING_LINK', err);
+          });
+        throw new InternalServerErrorException('SIGNUP_FAILED');
+      }
+    }
+
+    // =======================================================
+    // BƯỚC 1: TẠO USER MỚI
+    // =======================================================
     const user = await this.userService.createUser(
-      signUpDto.email,
+      email,
       passwordHash,
     );
 
@@ -65,6 +104,9 @@ export class AuthService {
         VERIFY_LINK_TTL_MS,
       );
       await this.mailService.sendVerificationEmail(user.email, verifyToken);
+
+      // Trả về mã thành công chuẩn hóa (Rule 14)
+      return { code: 'SIGNUP_SUCCESS' };
     } catch (error) {
       console.error(
         'Lỗi khi tạo token/email, tiến hành rollback user...',

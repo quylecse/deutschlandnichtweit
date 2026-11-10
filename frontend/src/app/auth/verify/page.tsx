@@ -5,8 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const AUTH_API_BASE = '/api/auth';
 
 const ERROR_MESSAGES: Record<string, string> = {
   LINK_NOT_FOUND_OR_EXPIRED:
@@ -15,6 +14,8 @@ const ERROR_MESSAGES: Record<string, string> = {
     'Tài khoản này đã được xác thực từ trước. Bạn có thể đăng nhập ngay.',
   USER_NOT_FOUND: 'Không tìm thấy thông tin tài khoản người dùng tương ứng.',
   USER_ID_REQUIRED: 'Yêu cầu không hợp lệ. Thiếu thông tin người dùng.',
+  CANNOT_CONNECT_TO_AUTH_SERVER:
+    'Không thể kết nối đến máy chủ xác thực. Vui lòng thử lại sau giây lát.',
 };
 
 function VerifyEmailContent() {
@@ -31,7 +32,7 @@ function VerifyEmailContent() {
     setErrorMessage('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+      const response = await fetch(`${AUTH_API_BASE}/verify-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,14 +40,24 @@ function VerifyEmailContent() {
         body: JSON.stringify({ verifyToken: token }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let data: { message?: string | string[]; code?: string } = {};
+
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Phản hồi verify không phải JSON:', text.slice(0, 150));
+        data = { message: 'CANNOT_CONNECT_TO_AUTH_SERVER' };
+      }
 
       if (!response.ok) {
         // Backend trả mã lỗi chuẩn hóa qua data.message (Rule 14)
-        const code = Array.isArray(data.message) ? data.message[0] : data.message;
+        const rawCode = data.message || 'CANNOT_CONNECT_TO_AUTH_SERVER';
+        const code = Array.isArray(rawCode) ? rawCode[0] : rawCode;
         const friendlyMessage =
           ERROR_MESSAGES[code] ||
-          'Không thể kích hoạt tài khoản. Vui lòng thử lại sau.';
+          `Lỗi xác thực: ${code}`;
         setErrorMessage(friendlyMessage);
         setStatus('error');
         return;

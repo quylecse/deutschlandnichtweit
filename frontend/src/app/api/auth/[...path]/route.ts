@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = (
-  process.env.BACKEND_URL ||
-  process.env.API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  'https://deutschlandnichtweit.onrender.com/api'
-).replace(/\/$/, '');
+function getBackendUrl(): string {
+  let url = (
+    process.env.BACKEND_URL ||
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    'https://deutschlandnichtweit.onrender.com/api'
+  ).trim().replace(/\/$/, '');
+
+  // Đảm bảo luôn có hậu tố /api khớp với app.setGlobalPrefix('api') của NestJS
+  if (!url.endsWith('/api')) {
+    url = `${url}/api`;
+  }
+  return url;
+}
+
+const BACKEND_URL = getBackendUrl();
 
 async function proxyAuthRequest(req: NextRequest, endpoint: string) {
   try {

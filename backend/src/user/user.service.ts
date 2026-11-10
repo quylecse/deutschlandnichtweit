@@ -58,4 +58,11 @@ export class UserService {
     }
     return await this.userRepo.findById(userId);
   }
+
+  async updatePassword(userId: string, passwordHash: string): Promise<void> {
+    if (!userId) {
+      throw new BadRequestException('USER_ID_REQUIRED');
+    }
+    await this.userRepo.updatePassword(userId, passwordHash);
+  }
 }
