@@ -3,7 +3,7 @@ import { Studienkolleg } from '../types/studienkolleg';
 const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.API_URL ||
-  'http://localhost:3001'
+  'https://deutschlandnichtweit.onrender.com'
 ).replace(/\/$/, '');
 
 export async function getStudienkollegs(): Promise<Studienkolleg[]> {
