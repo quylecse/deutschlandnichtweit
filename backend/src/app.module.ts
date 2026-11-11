@@ -8,6 +8,7 @@ import { CrawlerModule } from './crawler/crawler.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UserModule } from './user/user.module.js';
 import { MailService } from './mail/mail.service.js';
+import { CommunityModule } from './community/community.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MailService } from './mail/mail.service.js';
     CrawlerModule,
     AuthModule,
     UserModule,
+    CommunityModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService],
