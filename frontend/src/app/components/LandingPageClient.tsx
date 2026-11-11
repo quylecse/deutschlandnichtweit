@@ -158,6 +158,13 @@ export default function LandingPageClient({ schools }: Props) {
           </span>
 
           <div className="flex items-center gap-4">
+            <Link
+              href="/community"
+              className="text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs font-medium"
+            >
+              Cộng đồng
+            </Link>
+
             {isAuthenticated || user ? (
               <Link
                 href="/account"

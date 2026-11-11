@@ -156,7 +156,7 @@ export default function AccountPage() {
               <h2 className="text-xs uppercase tracking-[0.14em] text-[#6E6D68] mb-3">
                 02 / Lối tắt tính năng
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl">
                 <Link
                   href="/studienkollegs"
                   className="p-5 border border-[#111111] hover:bg-[#111111] hover:text-[#F6F5F0] transition-colors group"
@@ -165,7 +165,20 @@ export default function AccountPage() {
                     Khám phá
                   </div>
                   <div className="font-editorial text-base flex items-center justify-between">
-                    <span>Bảng tra cứu 22 trường</span>
+                    <span>Tra cứu 22 trường</span>
+                    <span className="text-sm font-sans">→</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/community"
+                  className="p-5 border border-[#111111] hover:bg-[#111111] hover:text-[#F6F5F0] transition-colors group"
+                >
+                  <div className="text-[10px] uppercase tracking-wider text-[#6E6D68] group-hover:text-[#C8C5BC] mb-1">
+                    Thảo luận
+                  </div>
+                  <div className="font-editorial text-base flex items-center justify-between">
+                    <span>Cộng đồng Threads</span>
                     <span className="text-sm font-sans">→</span>
                   </div>
                 </Link>
@@ -178,7 +191,7 @@ export default function AccountPage() {
                     Định hướng
                   </div>
                   <div className="font-editorial text-base flex items-center justify-between">
-                    <span>La bàn khối học T/M/W/G</span>
+                    <span>La bàn khối học</span>
                     <span className="text-sm font-sans">→</span>
                   </div>
                 </Link>
