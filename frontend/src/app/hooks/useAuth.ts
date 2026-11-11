@@ -66,7 +66,11 @@ export function useCurrentUser() {
         }
 
         const data = await safeJsonParse(res);
-        const user: AuthUser = data.user;
+        const user: AuthUser = {
+          ...data.user,
+          emailVerified:
+            data.user.emailVerified ?? data.user.email_verified ?? true,
+        };
         setUser(user);
         return user;
       } catch {
@@ -100,8 +104,13 @@ export function useSignIn() {
       return data as { code: string; user: AuthUser };
     },
     onSuccess: (data) => {
-      setUser(data.user);
-      queryClient.setQueryData(['auth', 'me'], data.user);
+      const authUser: AuthUser = {
+        ...data.user,
+        emailVerified:
+          data.user.emailVerified ?? true,
+      };
+      setUser(authUser);
+      queryClient.setQueryData(['auth', 'me'], authUser);
     },
   });
 }

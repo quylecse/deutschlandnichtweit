@@ -96,3 +96,4 @@ export async function DELETE(
   const endpoint = path.join('/');
   return proxyCommunityRequest(req, endpoint);
 }
+

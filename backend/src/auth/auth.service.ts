@@ -188,7 +188,7 @@ export class AuthService {
   ): Promise<{
     accessToken: string;
     refreshToken: string;
-    user: { id: string; email: string; roles: Role[] };
+    user: { id: string; email: string; roles: Role[]; emailVerified: boolean };
   }> {
     const { email, password } = signInDto;
 
@@ -239,6 +239,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         roles: user.roles,
+        emailVerified: user.emailVerified,
       },
     };
   }
@@ -253,7 +254,7 @@ export class AuthService {
   ): Promise<{
     accessToken: string;
     refreshToken: string;
-    user: { id: string; email: string; roles: Role[] };
+    user: { id: string; email: string; roles: Role[]; emailVerified: boolean };
   }> {
     if (!rawRefreshToken) {
       throw new UnauthorizedException('REFRESH_TOKEN_REQUIRED');
@@ -326,6 +327,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         roles: user.roles,
+        emailVerified: user.emailVerified,
       },
     };
   }

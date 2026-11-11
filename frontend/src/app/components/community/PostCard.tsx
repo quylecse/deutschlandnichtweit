@@ -246,3 +246,4 @@ export default function PostCard({ post, activeTopicSlug }: PostCardProps) {
     </article>
   );
 }
+

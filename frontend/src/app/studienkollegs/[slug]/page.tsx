@@ -367,6 +367,29 @@ async function SchoolDetailContent({ params }: { params: Promise<{ slug: string 
           )}
         </div>
       </div>
+
+      {/* Community Discussion Callout for this school */}
+      <section className="mt-10 sm:mt-14 border border-[#111111] bg-[#EFECE6] p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#6E6D68] block mb-1">
+            Diễn đàn sinh viên
+          </span>
+          <h3 className="font-editorial text-xl sm:text-2xl text-[#111111] font-semibold mb-1.5">
+            Bạn có câu hỏi hoặc đang ôn thi vào {school.name}?
+          </h3>
+          <p className="text-xs text-[#5A5955] max-w-xl leading-relaxed">
+            Tham gia diễn đàn Hỏi đáp & Thảo luận để chia sẻ đề mẫu Aufnahmetest, tìm bạn cùng phòng hoặc hỏi kinh nghiệm phỏng vấn APS/Visa.
+          </p>
+        </div>
+
+        <Link
+          href="/community?topic=hoi-dap-aufnahmetest"
+          className="shrink-0 px-5 py-3 bg-[#111111] text-[#F6F5F0] text-xs font-mono uppercase tracking-[0.14em] hover:opacity-85 transition-opacity inline-flex items-center gap-2 cursor-pointer"
+        >
+          <span>Hỏi đáp cộng đồng</span>
+          <span>→</span>
+        </Link>
+      </section>
     </main>
   );
 }

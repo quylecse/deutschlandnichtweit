@@ -342,6 +342,7 @@ describe('AuthService - Complete Auth Flow', () => {
           id: verifiedUser.id,
           email: verifiedUser.email,
           roles: verifiedUser.roles,
+          emailVerified: verifiedUser.emailVerified,
         },
       });
     });
@@ -417,6 +418,7 @@ describe('AuthService - Complete Auth Flow', () => {
           id: mockUser.id,
           email: mockUser.email,
           roles: mockUser.roles,
+          emailVerified: mockUser.emailVerified,
         },
       });
     });

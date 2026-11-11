@@ -47,3 +47,4 @@ export interface CreateCommentPayload {
   content: string;
   parentId?: string;
 }
+

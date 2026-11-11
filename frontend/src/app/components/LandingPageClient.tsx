@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   FileCheck2,
   GraduationCap,
+  MessageSquare,
   Sparkles,
 } from 'lucide-react';
 import { Studienkolleg } from '../types/studienkolleg';
@@ -18,6 +19,7 @@ import { useTableFilterStore } from '../stores/useTableFilterStore';
 import { useCurrentUser } from '../hooks/useAuth';
 import { useAuthStore } from '../stores/useAuthStore';
 import StudienkollegTable from './StudienkollegTable';
+import CommunityTeaser from './community/CommunityTeaser';
 import SiteFooter from './SiteFooter';
 
 interface Props {
@@ -157,12 +159,17 @@ export default function LandingPageClient({ schools }: Props) {
             Hà Nội {times.vn} · Berlin {times.de}
           </span>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/community"
-              className="text-[#111111] hover:opacity-60 transition-opacity uppercase tracking-wider text-[11px] sm:text-xs font-medium"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider border border-[#111111] bg-[#111111] text-[#F6F5F0] hover:bg-transparent hover:text-[#111111] transition-all group"
             >
-              Cộng đồng
+              <MessageSquare className="w-3 h-3 text-[#F6F5F0] group-hover:text-[#111111]" />
+              <span>Hỏi đáp</span>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+              </span>
             </Link>
 
             {isAuthenticated || user ? (
@@ -372,6 +379,9 @@ export default function LandingPageClient({ schools }: Props) {
         </div>
       </section>
 
+      {/* COMMUNITY TEASER SECTION */}
+      <CommunityTeaser />
+
       {/* DIRECTORY TABLE */}
       <section
         id="bangtracuu"
@@ -382,6 +392,24 @@ export default function LandingPageClient({ schools }: Props) {
           showHeader={true}
         />
       </section>
+
+      {/* Floating Community Pill (Accessible while browsing schools) */}
+      <aside className="fixed bottom-5 right-5 z-40">
+        <Link
+          href="/community"
+          className="flex items-center gap-2 px-3.5 py-2.5 bg-[#111111] text-[#F6F5F0] border border-[#F6F5F0]/30 shadow-xl hover:bg-[#2A2926] hover:scale-105 transition-all text-xs font-mono uppercase tracking-wider group cursor-pointer"
+          title="Mở diễn đàn Hỏi đáp & Thảo luận du học"
+        >
+          <div className="relative flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-[#F6F5F0]" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+          </div>
+          <span className="font-medium hidden sm:inline">Hỏi đáp cộng đồng</span>
+        </Link>
+      </aside>
 
       {/* FOOTER */}
       <SiteFooter />
